@@ -87,6 +87,9 @@ struct SparseGrad {
   vector<index_t> pos_w;
   // The postition of v.
   vector<index_t> pos_v;
+  // Number of active entry.
+  // The size = number_of_active_w + number_of_active_v.
+  index_t active_entry_size;
 };
 
 } // namespace f2m
