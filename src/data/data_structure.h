@@ -88,7 +88,7 @@ struct SparseGrad {
   // The postition of v.
   vector<index_t> pos_v;
   // Number of active entry.
-  // The size = number_of_active_w + number_of_active_v.
+  // The size = pos_w.size() + pos_v.size().
   index_t active_entry_size;
 };
 
