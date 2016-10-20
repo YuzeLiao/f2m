@@ -71,10 +71,6 @@ struct DMatrix {
   vector<SparseRow> row;
   // Y can be either -1 or 0 (for negetive examples),
   // and be 1 (for positive examples). 
-  // Note that, for some loss functions such as the cross-entropy loss,
-  // we can only use -1 (not 0) and 1 to represent negetive and positive 
-  // example, respectivly. But here we do not need to care about that because
-  // our loss function do the transformation by itself.
   vector<real_t> Y;
   // Size of DMatrix
   index_t row_size;
