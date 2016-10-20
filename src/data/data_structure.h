@@ -76,6 +76,19 @@ struct DMatrix {
   index_t row_size;
 };
 
+// SparseGrad is used to store the calculated gradient.
+// Here we use the 'flat model' to represent the model of LR,
+// FM, as well as FFM. Flat model store all the parameters in 
+// a big array.
+struct SparseGrad {
+  // The gradient vector.
+  vector<real_t> gradient;
+  // The position of w.
+  vector<index_t> pos_w;
+  // The postition of v.
+    vector<index_t> pos_v;
+}
+
 } // namespace f2m
 
 #endif // F2M_DATA_DATA_STRUCTURE_H_
