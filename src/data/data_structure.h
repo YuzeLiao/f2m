@@ -46,12 +46,12 @@ struct SparseRow {
   // For LR and FM, field = false (default).
   // For FFM, we need to set 'field = true' .
   explicit SparseRow(index_t len, bool field = false) {
-  	CHECK_GT(len, 0);
-  	X.resize(len);
-  	idx.resize(len);
-  	if (!field) 
-  	  field.resize(len);
-  	size = len;
+    CHECK_GT(len, 0);
+    X.resize(len);
+    idx.resize(len);
+    if (!field) 
+      field.resize(len);
+    size = len;
   }
   // X can be used to store both the numerical feature
   // and the categorical features. 
