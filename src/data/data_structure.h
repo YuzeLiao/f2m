@@ -50,7 +50,7 @@ struct SparseRow {
   	X.resize(len);
   	idx.resize(len);
   	if (!field) 
-  		field.resize(len);
+  	  field.resize(len);
   	size = len;
   }
   // X can be used to store both the numerical feature
@@ -76,7 +76,7 @@ struct DMatrix {
   // example, respectivly. But here we do not need to care about that because
   // our loss function do the transformation by itself.
   vector<real_t> Y;
-  // the size
+  // Size of DMatrix
   index_t row_size;
 };
 
