@@ -85,12 +85,9 @@ struct SparseGrad {
   vector<real_t> gradient;
   // The position of w.
   vector<index_t> pos_w;
-  // The postition of v. (optional)
-  // Only used for FFM.
+  // The postition of v.
   vector<index_t> pos_v;
-  // number of active feature.
-  index_t size_features;
-}
+};
 
 } // namespace f2m
 
