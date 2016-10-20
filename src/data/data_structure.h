@@ -31,25 +31,20 @@ using std::vector;
 
 namespace f2m {
 
-/* We use the 32 bits float type to store the real number,
-   such as the parameters and gradients. */
-
+// We use the 32 bits float type to store the real number,
+// such as the parameters and gradients. 
 typedef float real_t;
 
-/* We use the 32 bits unsigned int type to store the index,
-   or the size of model parameters. */
-
+// We use the 32 bits unsigned int type to store the index,
+// or the size of model parameters. 
 typedef uint32 index_t;
 
-/* We use the SparseRow to store one line of the input data.
-   Notice that the entry of 'field' is optional, and 
-   it used only for the FFM task. */
-
+// We use the SparseRow to store one line of the input data.
+// Notice that the entry of 'field' is optional, and 
+// it used only for the FFM task. 
 struct SparseRow {
-
-  /* For LR and FM, field = false (default).
-     For FFM, we need to set 'field = true' . */
-
+  // For LR and FM, field = false (default).
+  // For FFM, we need to set 'field = true' .
   explicit SparseRow(index_t len, bool field = false) {
   	CHECK_GT(len, 0);
   	X.resize(len);
@@ -58,46 +53,31 @@ struct SparseRow {
   		field.resize(len);
   	size = len;
   }
-  
-  /* X can be used to store both the numerical feature
-     and the categorical features. */
-
+  // X can be used to store both the numerical feature
+  // and the categorical features. 
   vector<real_t> X;
-
-  /* Storing the feature index. */ 
-
+  // Storing the feature index.
   vector<index_t> idx;
-
-  /* The 'field' is optional, only used for FFM. */
-
+  // The 'field' is optional, only used for FFM.
   vector<index_t> field;
-
-  /* Size of the SparseRow. */
-
+  // Size of the SparseRow. 
   index_t size;
-
 };
 
-/* DMatrix (data matrix) is used to store batch of data, 
-   which can be used for both trainning and prediction. */
-
+// DMatrix (data matrix) is used to store batch of data, 
+// which can be used for both trainning and prediction. 
 struct DMatrix {
-
-  /* Storing a set of SparseRow. */
-  
+  // Storing a set of SparseRow.
   vector<SparseRow> row;
-
-  /* Y can be either -1 or 0 (for negetive examples),
-     and be 1 (for positive examples). 
-     Note that, for some loss functions such as the cross-entropy loss,
-     we can only use -1 (not 0) and 1 to represent negetive and positive 
-     example, respectivly. But here we do not need to care about that because
-     our loss function do the transformation by itself. */
-
+  // Y can be either -1 or 0 (for negetive examples),
+  // and be 1 (for positive examples). 
+  // Note that, for some loss functions such as the cross-entropy loss,
+  // we can only use -1 (not 0) and 1 to represent negetive and positive 
+  // example, respectivly. But here we do not need to care about that because
+  // our loss function do the transformation by itself.
   vector<real_t> Y;
-
+  // the size
   index_t row_size;
-
 };
 
 } // namespace f2m
