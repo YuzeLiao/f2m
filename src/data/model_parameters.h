@@ -24,9 +24,13 @@ This file defines the model parameters used by f2m.
 #define F2M_DATA_MODEL_PARAMETERS_H_
 
 #include <vector>
+#include <string>
 
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
+
+using std::vector;
+using std::string;
 
 namespace f2m {
 
@@ -42,10 +46,10 @@ class Model {
         int k = 0, index_t field_num = 0);
 
   // Save model to disk file.
-  void SaveModel();
+  void SaveModel(const string& filename);
 
   // Load model from disk file.
-  void LoadModel();
+  void LoadModel(const string& filename);
 
  private:
   ModelType m_type;              // enum { LR, FM, FFM };

@@ -22,6 +22,12 @@ This file is the implementation of model parameters.
 
 #include "src/data/model_parameters.h"
 
+#include <vector>
+#include <string>
+
+using std::vector;
+using std::string;
+
 namespace f2m {
 
 const real_t kInitMean = 0.0;
@@ -60,11 +66,11 @@ Model::Model(index_t feature_num, ModelType type = LR,
     }
   }
 
-void Model::SaveFile() {
+void Model::SaveModel(const string& filename) {
 
 }
 
-void Model::LoadFile() {
+void Model::LoadModel(const string& filename) {
 
 }
 
