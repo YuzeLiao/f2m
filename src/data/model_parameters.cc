@@ -24,9 +24,13 @@ This file is the implementation of model parameters.
 
 #include <vector>
 #include <string>
+#include <fstream>
+
+#include "src/base/common.h"
 
 using std::vector;
 using std::string;
+using std::ofstream;
 
 namespace f2m {
 
@@ -67,7 +71,50 @@ Model::Model(index_t feature_num, ModelType type = LR,
   }
 
 void Model::SaveModel(const string& filename) {
-
+  ofstream out_model;
+  out_model.open(filename.c_str());
+  // output bias term.
+  out_model << "#global bias W0" << std::endl;
+  out_model << m_parameters[0] << std::endl;
+  // output linear term.
+  out_model << "#unary iteractions Wi" << std::endl;
+  for (index_t i = 1; i < m_feature_num + 1; ++i) {
+    out_model << m_parameters[i] << std::endl;
+  }
+  // output V
+  int index = m_feature_num + 1;
+  if (m_type == FM) {
+    out_model << "#pairwise interactions Vi" << std::endl;
+    for (index_t i = 0; i < m_feature_num; ++i) {
+      out_model << "feature " << i << "# : ";
+      for (int n = 0; n < m_k; ++n) {
+        out_model << m_parameters[index];
+        if (n != m_k - 1) {
+            output << " ";
+        }
+        out_model << std::endl;
+        ++index;
+      }
+    }
+  }
+  // output Matrix
+  else if (m_type == FFM) {
+    out_model << "#pairwise interactions Vj,f" << std::endl;
+    for (index_t i = 0; i < m_feature_num; ++i) {
+      out_model << "feature " << i << "# : ";
+      for (index_t f = 0; f < m_field_num; ++f) {
+        out_model << "field " << f << " : ";
+        for (int n = 0; n < m_k; ++n) {
+          out_model << m_parameters[index];
+          if (n != m_k - 1) {
+            output << " ";
+          }
+          out_model << std::endl;
+          ++index;
+        }
+      }
+    }
+  }
 }
 
 void Model::LoadModel(const string& filename) {
@@ -79,11 +126,13 @@ void Model::InitModel() {
   for (index_t i = 0; i < m_feature_num + 1; ++i) {
        m_parameters[i] = 0.0;
   }
-  // Init V or Matrix
-  for (index_t i = m_feature_num + 1; i < m_parameters_num; ++i) {
-     // gaussian distribution
-     m_parameters[i] = ran_gaussian(kInitMean, kInitStdev);
-  }	
+  if (m_type == FM || m_type == FFM) {
+    // Init V or Matrix
+    for (index_t i = m_feature_num + 1; i < m_parameters_num; ++i) {
+       // gaussian distribution
+       m_parameters[i] = ran_gaussian(kInitMean, kInitStdev);
+    }	
+  }
 }
 
 } // namespace f2m

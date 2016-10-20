@@ -57,7 +57,7 @@ class Model {
   index_t m_feature_num;         // number of features.
   index_t m_parameters_num;      // number of parameters.
   int m_k;                       // factor size for FM and FFM.
-  int m_field_num;               // number of field. (only for FFM).
+  index_t m_field_num;           // number of field. (only for FFM).
 
   void InitModel();
 
