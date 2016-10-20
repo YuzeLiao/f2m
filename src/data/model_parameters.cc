@@ -39,7 +39,7 @@ Model::Model(index_t feature_num, ModelType type = LR,
   m_type(type),
   m_k(k),
   m_field_num(field_num) {
-  	CHECK_GT(m_feature_num, 0);
+    CHECK_GT(m_feature_num, 0);
     CHECK_GE(m_k, 0);
     CHECK_GE(m_field_num, 0);
     // allocate memory and initialize model parameters.
