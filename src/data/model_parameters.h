@@ -42,14 +42,16 @@ enum ModelType { LR, FM, FFM };
 class Model {
  public:
   // By default, the constructor is used for LR.
-  Model(index_t feature_num, ModelType type = LR,
-        int k = 0, index_t field_num = 0);
+  Model(index_t feature_num, 
+        ModelType type = LR,
+        int k = 0, 
+        index_t field_num = 0);
 
-  // Save model to disk file.
-  void SaveModel(const string& filename);
+  // Save model to disk file. Using TXT format by default.
+  void SaveModel(const string& filename, bool Txt = false);
 
-  // Load model from disk file.
-  void LoadModel(const string& filename);
+  // Load model from disk file. Using TXT format by default.
+  void LoadModel(const string& filename, bool Txt = false);
 
  private:
   ModelType m_type;              // enum { LR, FM, FFM };
@@ -59,7 +61,14 @@ class Model {
   int m_k;                       // factor size for FM and FFM.
   index_t m_field_num;           // number of field. (only for FFM).
 
+  // Initialize model parameters using 
+  // the random gaussian distribution
   void InitModel();
+
+  void SaveTxtModel(const string& filename);
+  void SaveBinaryModel(const string& filename);
+  void LoadTxtModel(const string& filename);
+  void LoadBinaryModel(const string& filename);
 
   DISALLOW_COPY_AND_ASSIGN(Model);
 };

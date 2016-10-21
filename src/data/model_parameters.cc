@@ -103,7 +103,7 @@ void Model::SaveModel(const string& filename) {
     for (index_t i = 0; i < m_feature_num; ++i) {
       out_model << "feature " << i << "# : ";
       for (index_t f = 0; f < m_field_num; ++f) {
-        out_model << "field " << f << " : ";
+        out_model << "field " << f << "# : ";
         for (int n = 0; n < m_k; ++n) {
           out_model << m_parameters[index];
           if (n != m_k - 1) {
@@ -118,7 +118,45 @@ void Model::SaveModel(const string& filename) {
 }
 
 void Model::LoadModel(const string& filename) {
+  CHECK_EQ(m_parameters.size(), m_parameters_num);
+  string line;
+  ifstream model_file(filename.c_str());
+  if (model_file.is_open()) {
+    if (!std::getline(model_file, line)) { // #global bais W0
+      LOG(FATAL) << "Read file error: " << filename ; 
+    }
+    if (!std::getline(model_file, line)) { // W0
+      LOG(FATAL) << "Read file error: " << filename;
+    }
+    m_parameters[0] = std::atof(line.c_str());
+    if (!std::getline(model_file, line)) { // #unary interactions Wj
+      LOG(FATAL) << "Read file error: " << filename;
+    }
+    int index = 1;
+    for (index_t i = 0; i < m_feature_num; ++i) { // Wj
+      if (!std::getline(model_file, line)) {
+        LOG(FATAL) << "Read file error: " << filename;
+      }
+      m_feature_num[index] = std::atof(line.c_str());
+      ++index;
+    }
+    if (m_type == FM) {
+      if (!std::getline(model_file, line)) { // pairwise interactions Vi
+        LOG(FATAL) << "Read file error: " << filename;
+      }
+      for (index_t i = 0; i < m_feature_num; ++i) {
+        if (!std::getline(model_file, line)) { // feature i: 
+          LOG(FATAL) << "Read file error: " << filename;
+        }
+        
+      }
+    } else if (m_type == FFM) {
 
+    }
+
+  } else {
+    LOG(FATAL) << "Open file error: " << filename;
+  }
 }
 
 void Model::InitModel() {
