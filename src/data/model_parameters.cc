@@ -38,7 +38,7 @@ namespace f2m {
 // parameters for gaussian distribution.
 const real_t kInitMean = 0.0;
 const real_t kInitStdev = 0.01;
-// The buffer must be fitted with N elments.
+// The buffer must be fitted with just N elments.
 const uint32 kMaxBufSize = sizeof(real_t) * 10 * 1024 * 1024; // 320 MB
 const uint32 kElemSize = sizeof(real_t);
 
@@ -80,7 +80,7 @@ void Model::SaveModel(const string& filename) {
   CHECK_EQ(m_parameters_num, m_parameters.size());
   FILE* pfile = OpenFileOrDie(filename.c_str(), "w");
   CHECK_NOTNULL(pfile);
-  char *buf;
+  char *buf = NULL;
   // allocate an in-memory buffer
   try {
     buf = new char[kMaxBufSize];
@@ -121,7 +121,7 @@ void Model::LoadModel(const string& filename) {
   FILE* pfile = OpenFileOrDie(filename.c_str(), "r");
   CHECK_NOTNULL(pfile);
   // allocate an in-memory buffer 
-  char* buf;
+  char* buf = NULL;
   try {
     buf = new char[kMaxBufSize];
   } catch (std::bad_alloc&) {
