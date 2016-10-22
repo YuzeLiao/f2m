@@ -87,7 +87,6 @@ Reader::~Reader() {
 }
 
 StringList* Reader::Samples() {
-  m_data_samples.clear();
   return m_in_memory ? SampleFromMemory() :
                        SampleFromDisk();
 }
@@ -117,6 +116,7 @@ StringList* Reader::SampleFromDisk() {
       }
     }
     (*m_data_samples)[i].assign(line);
+    m_cur_sample_size = i;
   }
   return m_data_samples;
 }
@@ -159,6 +159,7 @@ StringList* Reader::SampleFromMemory() {
       line[read_size-2] = '\0';
     }
     (*m_data_samples)[i].assign(line);
+    m_cur_sample_size = i;
   }
   return m_data_samples;
 }

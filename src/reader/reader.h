@@ -114,7 +114,10 @@ class Reader {
   char* m_memory_buffer;            // in-memory buffer
   uint32 m_buf_size;                // buffer size
 
-  StringList m_data_samples;        // current data samples.
+  StringList* m_data_samples;       // point to current data samples.
+  uint32 m_cur_sample_size;         // in a non-loop model, the size of data 
+                                    // in the last sampling is not equal to 
+                                    // m_num_samples.
 
   StringList* SampleFromDisk();
   StringList* SampleFromMemory();
