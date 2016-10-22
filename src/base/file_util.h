@@ -46,4 +46,23 @@ inline void Close(FILE *file) {
   }
 }
 
+// Write data from in-memory buffer to disk file.
+uint32 WriteDataToDisk(FILE* file, const char* buf, uint32 len) {
+  CHECK_NOTNULL(file);
+  CHECK_NOTNULL(buf);
+  CHECK_GT(len, 0);
+  uint32 write_len = fwrite(buf, 1, len, file);
+  return write_len;
+}
+
+// Read data from disk file to in-memory buffer.
+uint32 ReadDataFromDisk(FILE* file, char *buf, uint32 max_len) {
+  CHECK_NOTNULL(file);
+  CHECK_NOTNULL(buf);
+  CHECK_GT(max_len, 0);
+  if (feof(file)) return 0;
+  uint32 read_len = fread(buf, 1, max_len, file);
+  return read_len;
+}
+
 #endif // F2M_BASE_FILE_UTIL_H_
