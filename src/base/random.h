@@ -30,6 +30,10 @@ typedef float real_t;
 
 // random gaussion distribution
 
+real_t ran_uniform() {
+  return rand() / ((real_t) RAND_MAX + 1);
+}
+
 real_t ran_gaussion() {
   real_t u,v,x,y,Q;
   do {
@@ -51,10 +55,6 @@ real_t ran_gaussion(real_t mean, real_t stdev) {
   } else {
     return mean + stdev * ran_gaussion();
   }
-}
-
-real_t ran_uniform() {
-  return rand() / ((real_t) RANDOM_MAX + 1);
 }
 
 #endif // F2M_BASE_RANDOM_H_

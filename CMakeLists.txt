@@ -106,5 +106,6 @@ link_directories(
 # Declare packages in F2M project.
 #-------------------------------------------------------------------------------
 add_subdirectory(src/base)
+add_subdirectory(src/data)
 
 

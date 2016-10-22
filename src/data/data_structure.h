@@ -44,12 +44,12 @@ typedef uint32 index_t;
 // it used only for the FFM task. 
 struct SparseRow {
   // For LR and FM, field = false (default).
-  // For FFM, we need to set 'field = true' .
-  explicit SparseRow(index_t len, bool field = false) {
+  // For FFM, we need to set 'ffm = true' .
+  explicit SparseRow(index_t len, bool ffm = false) {
     CHECK_GT(len, 0);
     X.resize(len);
     idx.resize(len);
-    if (!field) 
+    if (ffm) 
       field.resize(len);
     size = len;
   }
