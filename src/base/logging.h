@@ -40,6 +40,11 @@ Example:
 #ifndef F2M_BASE_LOGGING_H_
 #define F2M_BASE_LOGGING_H_
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+
 void InitializeLogger(const std::string& info_log_filename,
                       const std::string& warn_log_filename,
                       const std::string& erro_log_filename);
