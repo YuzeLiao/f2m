@@ -28,6 +28,7 @@ This file is the implementation of model parameters.
 
 #include "src/base/common.h"
 #include "src/base/logging.h"
+#include "src/base/file_util.h"
 
 using std::vector;
 using std::string;
@@ -37,6 +38,8 @@ namespace f2m {
 // parameters for gaussian distribution.
 const real_t kInitMean = 0.0;
 const real_t kInitStdev = 0.01;
+const uint32 kMaxBufSize = 512 * 1024 * 1024; // 512 MB
+const uint32 kElemSize = sizeof(real_t);
 
 Model::Model(index_t feature_num, ModelType type,
              int k, index_t field_num) :
@@ -69,17 +72,72 @@ Model::Model(index_t feature_num, ModelType type,
       LOG(FATAL) << "Cannot allocate enough memory for \
                      current model parameters.";
     }
-  }
+}
 
 void Model::SaveModel(const string& filename) {
+  CHECK_NE(filename.empty(), true);
+  CHECK_EQ(m_parameters_num, m_parameters.size());
+  FILE* pfile = OpenFileOrDie(filename.c_str(), "w");
+  EXPECT_TRUE(pfile != NULL);
+  // allocate an in-memory buffer
+  char *buf = new char[kMaxBufSize];
+  uint32 total_size = 0;
+  for (index_t i = 0; i < m_parameters_num; ++i) {
+    // buffer is full
+    if (total_size + kElemSize > kMaxBufSize) {
+      // from file_util.h
+      if (total_size != WriteDataToDisk(pfile, buf, total_size)) {
+        LOG(FATAL) << "Write model to file " 
+                   << filename << " error.\n";
+      }
+      total_size = 0;
+      --i;
+    } else { // add value to in-memory buffer
+      char *ch = reinterpret_cast<char*>(&(m_parameters[i]));
+      memcpy(buf + total_size, ch, kElemSize);
+      total_size += kElemSize;
+    }
+  }
+  if (total_size != 0) {
+    if (total_size != WriteDataToDisk(pfile, buf, total_size)) {
+      LOG(FATAL) << "Write model to file "
+                 << filename << " error.\n"; 
+    }
+  }
+  Close(pfile);
+  delete buf;
 }
 
 void Model::LoadModel(const string& filename) {
+  CHECK_NE(filename.empty(), true);
+  CHECK_EQ(m_parameters_num, m_parameters.size());
+  FILE* pfile = OpenFileOrDie(filename.c_str(), "r");
+  EXPECT_TRUE(pfile != NULL);
+  // allocate an in-memory buffer 
+  char *buf = new char[kMaxBufSize];
+  // from file_util.h
+  int len = 0, index = 0;
+  do {
+    len = ReadDataFromDisk(pfile, buf, kMaxBufSize);
+    if (len == -1) {
+      LOG(FATAL) << "Load model from file " 
+                 << filename << "error.\n";
+    }
+    // parse every elements
+    for (uint32 i = 0; i < len; i += kElemSize) {
+      real_t *value = buf + i;
+      m_parameters[index] = *value;
+      ++index;
+    }
+  } while (len != 0);
+  Close(pfile);
+  delete buf;
 }
 
 // Initialize model parameters using 
 // a random gaussian distribution
 void Model::InitModel() {
+  CHECK_EQ(m_parameters_num, m_parameters.size());
   for (index_t i = 0; i < m_parameters_num; ++i) {
     m_parameters[i] = ran_gaussion(kInitMean, kInitStdev);
   }

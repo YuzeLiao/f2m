@@ -17,44 +17,33 @@
 /*
 Author: Chao Ma (mctt90@gmail.com)
 
-This file implements sampling methods.
+Open and Close the file.
 */
 
-#ifndef F2M_BASE_RANDOM_H_
-#define F2M_BASE_RANDOM_H_
+#ifndef F2M_BASE_FILE_UTIL_H_
+#define F2M_BASE_FILE_UTIL_H_
 
-#include <stdlib.h>
-#include <cmath>
+#include <string>
 
-typedef float real_t;
+#include "src/base/common.h"
+#include "src/base/logging.h"
 
-// random gaussion distribution
+using std::string;
 
-real_t ran_uniform() {
-  return rand() / ((real_t) RAND_MAX + 1);
+// Open file using C API.
+inline FILE* OpenFileOrDie(const char* filename, const char* mode) {
+  FILE* input_stream = fopen(filename, mode);
+  if (input_stream == NULL) {
+    LOG(FATAL) << "Cannot open file: " << filename << " with mode: " << mode;
+  }
+  return input_stream;
 }
 
-real_t ran_gaussion() {
-  real_t u,v,x,y,Q;
-  do {
-    do {
-      u = ran_uniform();
-    } while (u == 0.0);
-    v = 1.7156 * (ran_uniform() - 0.5);
-    x = u - 0.449871;
-    y = std::abs(v) + 0.386595;
-    Q = x*x + y*(0.19600*y-0.25472*x);
-    if (Q < 0.27597) { break; }
-  } while ((Q > 0.27846) || ((v*v) > (-4.0*u*u*std::log(u))));
-  return v / u;
-}
-
-real_t ran_gaussion(real_t mean, real_t stdev) {
-  if ((stdev == 0.0 || (std::isnan(stdev)))) {
-    return mean;    
-  } else {
-    return mean + stdev * ran_gaussion();
+// Close file using C API.
+inline void Close(FILE *file) {
+  if(fclose(file) == -1) {
+    LOG(FATAL) << "Cannot close the file.";
   }
 }
 
-#endif // F2M_BASE_RANDOM_H_
+#endif // F2M_BASE_FILE_UTIL_H_
