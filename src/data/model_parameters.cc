@@ -79,10 +79,11 @@ void Model::SaveModel(const string& filename) {
   CHECK_NE(filename.empty(), true);
   CHECK_EQ(m_parameters_num, m_parameters.size());
   FILE* pfile = OpenFileOrDie(filename.c_str(), "w");
-  EXPECT_TRUE(pfile != NULL);
+  CHECK_NOTNULL(pfile);
+  char *buf;
   // allocate an in-memory buffer
   try {
-    char *buf = new char[kMaxBufSize];
+    buf = new char[kMaxBufSize];
   } catch (std::bad_alloc&) {
     LOG(FATAL) << "Cannot allocate enough memory for \
                    memory buffer.";
@@ -118,22 +119,23 @@ void Model::LoadModel(const string& filename) {
   CHECK_NE(filename.empty(), true);
   CHECK_EQ(m_parameters_num, m_parameters.size());
   FILE* pfile = OpenFileOrDie(filename.c_str(), "r");
-  EXPECT_TRUE(pfile != NULL);
+  CHECK_NOTNULL(pfile);
   // allocate an in-memory buffer 
+  char* buf;
   try {
-    char *buf = new char[kMaxBufSize];
+    buf = new char[kMaxBufSize];
   } catch (std::bad_alloc&) {
     LOG(FATAL) << "Cannot allocate enough memory for \
                    memory buffer.";
   }
   uint32 len = 0;
-  index_t index;
+  index_t index = 0;
   do {
     // from file_util.h
     len = ReadDataFromDisk(pfile, buf, kMaxBufSize);
     // parse every elements
     for (uint32 i = 0; i < len; i += kElemSize) {
-      real_t *value = buf + i;
+      real_t *value = reinterpret_cast<real_t*>(buf + i);
       m_parameters[index] = *value;
       index++;
     }
