@@ -38,7 +38,8 @@ namespace f2m {
 // parameters for gaussian distribution.
 const real_t kInitMean = 0.0;
 const real_t kInitStdev = 0.01;
-const uint32 kMaxBufSize = 512 * 1024 * 1024; // 512 MB
+// The buffer must be fitted with N elments.
+const uint32 kMaxBufSize = sizeof(real_t) * 10 * 1024 * 1024; // 320 MB
 const uint32 kElemSize = sizeof(real_t);
 
 Model::Model(index_t feature_num, ModelType type,
@@ -80,13 +81,18 @@ void Model::SaveModel(const string& filename) {
   FILE* pfile = OpenFileOrDie(filename.c_str(), "w");
   EXPECT_TRUE(pfile != NULL);
   // allocate an in-memory buffer
-  char *buf = new char[kMaxBufSize];
-  uint32 total_size = 0;
+  try {
+    char *buf = new char[kMaxBufSize];
+  } catch (std::bad_alloc&) {
+    LOG(FATAL) << "Cannot allocate enough memory for \
+                   memory buffer.";
+  }
+  uint32 total_size = 0; 
   for (index_t i = 0; i < m_parameters_num; ++i) {
     // buffer is full
     if (total_size + kElemSize > kMaxBufSize) {
       // from file_util.h
-      if (total_size != WriteDataToDisk(pfile, buf, total_size)) {
+      if (kMaxBufSize != WriteDataToDisk(pfile, buf, total_size)) {
         LOG(FATAL) << "Write model to file " 
                    << filename << " error.\n";
       }
@@ -114,22 +120,25 @@ void Model::LoadModel(const string& filename) {
   FILE* pfile = OpenFileOrDie(filename.c_str(), "r");
   EXPECT_TRUE(pfile != NULL);
   // allocate an in-memory buffer 
-  char *buf = new char[kMaxBufSize];
-  // from file_util.h
-  int len = 0, index = 0;
+  try {
+    char *buf = new char[kMaxBufSize];
+  } catch (std::bad_alloc&) {
+    LOG(FATAL) << "Cannot allocate enough memory for \
+                   memory buffer.";
+  }
+  uint32 len = 0;
+  index_t index;
   do {
+    // from file_util.h
     len = ReadDataFromDisk(pfile, buf, kMaxBufSize);
-    if (len == -1) {
-      LOG(FATAL) << "Load model from file " 
-                 << filename << "error.\n";
-    }
     // parse every elements
     for (uint32 i = 0; i < len; i += kElemSize) {
       real_t *value = buf + i;
       m_parameters[index] = *value;
-      ++index;
+      index++;
     }
   } while (len != 0);
+  CHECK_EQ(index, m_parameters_num);
   Close(pfile);
   delete buf;
 }
