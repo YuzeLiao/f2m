@@ -90,7 +90,14 @@ namespace f2m {
  * -----------------------------------------------------------------------------
  */
 
-typedef vector<string> StringList;
+struct StringList {
+  StringList(uint32 max_num_samples) {
+    row.resize(max_num_samples);
+    num_samples = 0;
+  }
+  vector<string> row;
+  uint32 num_samples;
+};
 
 class Reader {
  public:
@@ -114,10 +121,7 @@ class Reader {
   char* m_memory_buffer;            // in-memory buffer
   uint32 m_buf_size;                // buffer size
 
-  StringList* m_data_samples;       // point to current data samples.
-  uint32 m_cur_sample_size;         // in a non-loop model, the size of data 
-                                    // in the last sampling is not equal to 
-                                    // m_num_samples.
+  StringList m_data_samples;        // storing current data samples.
 
   StringList* SampleFromDisk();
   StringList* SampleFromMemory();

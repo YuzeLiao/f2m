@@ -45,13 +45,14 @@ Reader::Reader(const string& filename,
   m_filename(filename),
   m_num_samples(num_samples),
   m_loop(loop),
-  m_in_memory(in_memory) {
+  m_in_memory(in_memory),
+  m_data_samples(num_samples) {
     CHECK_GT(m_num_samples, 0);
     CHECK_NE(filename.empty(), true);
 
     m_file_ptr = OpenFileOrDie(m_filename.c_str(), "r");
 
-    // allocate memory for memory buffer
+    // allocate memory for in-memory buffer
     if (m_in_memory) {
       // get the size of current file.
       fseek(m_file_ptr, 0, SEEK_END);
@@ -87,6 +88,7 @@ Reader::~Reader() {
 }
 
 StringList* Reader::Samples() {
+  m_num_samples.num_samples = 0;
   return m_in_memory ? SampleFromMemory() :
                        SampleFromDisk();
 }
@@ -115,10 +117,10 @@ StringList* Reader::SampleFromDisk() {
         line[read_len-2] = '\0';
       }
     }
-    (*m_data_samples)[i].assign(line);
-    m_cur_sample_size = i;
+    m_data_samples.row[i].assign(line);
+    m_data_samples.num_samples++;
   }
-  return m_data_samples;
+  return &m_data_samples;
 }
 
 uint32 Reader::ReadLineFromMemory(char* line, char* buf, uint32 len) {
@@ -158,10 +160,10 @@ StringList* Reader::SampleFromMemory() {
     if (read_size > 1 && line[read_size-2] == '\r') {
       line[read_size-2] = '\0';
     }
-    (*m_data_samples)[i].assign(line);
-    m_cur_sample_size = i;
+    m_data_samples.row[i].assign(line);
+    m_data_samples.num_samples++;
   }
-  return m_data_samples;
+  return &m_data_samples;
 }
 
 } // namespace f2m
