@@ -93,7 +93,7 @@ set(THIRD_PARTY_LIB "${THIRD_PARTY_DIR}/lib")
 
 include_directories(
   "${PROJECT_SOURCE_DIR}"
-  "${PROJECT_SOURCE_DIR}/src/gtest/include"
+  "${PROJECT_SOURCE_DIR}/gtest/include"
   "${THIRD_PARTY_HEADER}"
 )
 
@@ -105,6 +105,7 @@ link_directories(
 #-------------------------------------------------------------------------------
 # Declare packages in F2M project.
 #-------------------------------------------------------------------------------
+add_subdirectory(gtest)
 add_subdirectory(src/base)
 add_subdirectory(src/data)
 

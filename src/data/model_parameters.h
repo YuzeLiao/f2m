@@ -27,7 +27,6 @@ This file defines the model parameters used by f2m.
 #include <string>
 
 #include "src/base/common.h"
-#include "src/base/random.h"
 #include "src/data/data_structure.h"
 
 using std::vector;
@@ -46,7 +45,8 @@ class Model {
   Model(index_t feature_num, 
         ModelType type = LR,
         int k = 0, 
-        index_t field_num = 0);
+        index_t field_num = 0,
+        bool gaussian = false);
 
   // Save model to disk file. 
   void SaveModel(const string& filename);
@@ -54,17 +54,19 @@ class Model {
   // Load model from disk file.
   void LoadModel(const string& filename);
 
+  vector<real_t>* GetParameter() { return &m_parameters; }
+
  private:
-  ModelType m_type;              // enum { LR, FM, FFM };
-  vector<real_t> m_parameters;   // To store the global model parameters.
-  index_t m_feature_num;         // number of features.
-  index_t m_parameters_num;      // number of parameters.
-  int m_k;                       // factor size for FM and FFM.
-  index_t m_field_num;           // number of field. (only for FFM).
+  ModelType m_type;               // enum { LR, FM, FFM };
+  vector<real_t> m_parameters;    // To store the global model parameters.
+  index_t m_feature_num;          // number of features.
+  index_t m_parameters_num;       // number of parameters.
+  int m_k;                        // factor size for FM and FFM.
+  index_t m_field_num;            // number of field. (only for FFM).
 
   // Initialize model parameters using 
   // the random gaussian distribution
-  void InitModel();
+  void InitModelUsingGaussian();
 
   DISALLOW_COPY_AND_ASSIGN(Model);
 };

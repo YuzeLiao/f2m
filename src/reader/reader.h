@@ -95,8 +95,6 @@ class Reader {
                                      by default. */
   ~Reader();
 
-  void Init();
-
   // Return a pointer to N lines of data samples.
   DMatrix* Samples();
 
