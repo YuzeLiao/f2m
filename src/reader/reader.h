@@ -28,6 +28,7 @@ in each iteration.
 #include <vector>
 
 #include "src/base/common.h"
+#include "src/data/data_structure.h"
 
 using std::vector;
 using std::string;
@@ -41,8 +42,7 @@ namespace f2m {
  *                                                                              *
  *   // Constructor                                                             *
  *   Reader reader(filename = "/tmp/testdata",                                  *
- *                 num_samples = 100,                                           *
- *                 loop = true);                                                *
+ *                 num_samples = 100);                                          *
  *                                                                              *
  *   Loop until converge {                                                      *
  *                                                                              *
@@ -52,11 +52,8 @@ namespace f2m {
  *                                                                              *
  *   }                                                                          *
  *                                                                              *
- * If we set 'loop = true', the reader will return to the beginning of the      *
- * file automatically when it reach the end of file.                            *
- *                                                                              *
- * If we set 'loop = false', the reader will finish its job when it reach       *
- * the end of file.                                                             *
+ * The reader will return to the beginning of the file automatically when       *
+ * it reach the end of file.                                                    *
  *                                                                              *
  * We can set the number of N in construct funtion of Reader:                   *
  *                                                                              *
@@ -90,41 +87,30 @@ namespace f2m {
  * -----------------------------------------------------------------------------
  */
 
-struct StringList {
-  StringList(uint32 max_num_samples) {
-    row.resize(max_num_samples);
-    num_samples = 0;
-  }
-  vector<string> row;
-  uint32 num_samples;
-};
-
 class Reader {
  public:
   Reader(const string& filename,
          uint32 num_samples,
-         bool loop = false,        
          bool in_memory = false); /* Reader samples data from disk file 
                                      by default. */
   ~Reader();
 
+  void Init();
+
   // Return a pointer to N lines of data samples.
-  StringList* Samples();
+  DMatrix* Samples();
 
  private:
-  string m_filename;                // Indentify the input file.
-  uint32 m_num_samples;             // How many data samples we need.
-  bool m_loop;                      // if in a loop model.
+  string m_filename;                // indentify the input file.
+  uint32 m_num_samples;             // how many data samples we need.
   bool m_in_memory;                 // load all data into memory.
-
   FILE* m_file_ptr;                 // maintain current file pointer.
-  char* m_memory_buffer;            // in-memory buffer
-  uint32 m_buf_size;                // buffer size
 
-  StringList m_data_samples;        // storing current data samples.
-
-  StringList* SampleFromDisk();
-  StringList* SampleFromMemory();
+  DMatrix* m_data_buf;              // bufferring all data in memory.
+  DMatrix* m_data_samples;          // data samples for trainning in
+                                    // each iteration.
+  DMatrix* SampleFromDisk();
+  DMatrix* SampleFromMemory();
   uint32 ReadLineFromMemory(char* line, char* buf, uint32 len);
 
   DISALLOW_COPY_AND_ASSIGN(Reader);

@@ -39,13 +39,14 @@ typedef float real_t;
 // or the size of model parameters. 
 typedef uint32 index_t;
 
-// We use the SparseRow to store one line of the input data.
+// We use the SparseRow to store one line of the input data,
+// which is parsed from the StringList.
 // Notice that the entry of 'field' is optional, and 
 // it used only for the FFM task. 
 struct SparseRow {
   // For LR and FM, field = false (default).
   // For FFM, we need to set 'ffm = true' .
-  explicit SparseRow(index_t len, bool ffm = false) {
+  void resize(index_t len, bool ffm = false) {
     CHECK_GT(len, 0);
     X.resize(len);
     idx.resize(len);
@@ -67,6 +68,11 @@ struct SparseRow {
 // DMatrix (data matrix) is used to store batch of data, 
 // which can be used for both trainning and prediction. 
 struct DMatrix {
+  DMatrix(uint32 size) {
+    row.resize(size);
+    Y.resize(size);
+    row_size = size;
+  }
   // Storing a set of SparseRow.
   vector<SparseRow> row;
   // Y can be either -1 or 0 (for negetive examples),
@@ -89,7 +95,7 @@ struct SparseGrad {
   vector<index_t> pos_v;
   // Number of active entry.
   // The size = pos_w.size() + pos_v.size().
-  index_t active_entry_size;
+  index_t active_entry_num;
 };
 
 } // namespace f2m

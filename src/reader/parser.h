@@ -31,13 +31,12 @@ output to a DMatrix format.
 #include "src/base/common.h"
 #include "src/base/logging.h"
 #include "src/data/data_structure.h"
+#include "src/reader/reader.h"
 
 using std::vector;
 using std::string;
 
 namespace f2m {
-    
-typedef vector<string> StringList;
 
 // Given a StringList, parse it to a DMatrix.
 class Parser {
@@ -45,8 +44,8 @@ class Parser {
   static void Parse(const StringList* list, DMatrix* matrix) {
     CHECK_NOTNULL(list);
     CHECK_NOTNULL(matrix);
-    CHECK_GT(list->size());
-    CHECK_GT()
+    CHECK_GT(list->num_samples, 0);
+    
   }
 };
 
