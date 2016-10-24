@@ -22,14 +22,19 @@ This file tests model_parameters.h
 
 #include "gtest/gtest.h"
 
+#include <string>
+
 #include "src/data/model_parameters.h"
 #include "src/data/data_structure.h"
+
+using std::string;
 
 namespace f2m {
 
 const uint32 kFeature_num = 1000000;
 const uint32 kFactor = 10;
 const uint32 kField = 10;
+const string kFilename = "/tmp/test_model.binary";
 
 TEST(MODEL_TEST, Init) {
   // Init LR
@@ -41,7 +46,7 @@ TEST(MODEL_TEST, Init) {
   para = model_fm.GetParameter();
   EXPECT_EQ(para->size(), kFeature_num + 1 + 
                           kFeature_num * kFactor);
-  // Init FFM
+  // Init FFM with gaussion distribution.
   Model model_ffm(kFeature_num, FFM, kFactor, kField, true);
   para = model_ffm.GetParameter();
   EXPECT_EQ(para->size(), kFeature_num + 1 + 
@@ -49,11 +54,22 @@ TEST(MODEL_TEST, Init) {
 }
 
 TEST(MODEL_TEST, SaveModel) {
-
+  // Init a FFM model 
+  Model ffm(kFeature_num, FFM, kFactor, kField);
+  ffm.SaveModel(kFilename);
 }
 
 TEST(MODEL_TEST, LoadModel) {
-        
+  // Init a FFM model with gaussion distribution.
+  Model ffm(kFeature_num, FFM, kFactor, kField, true);
+  // parameters become 0.
+  ffm.LoadModel(kFilename);
+  index_t num_parameter = kFeature_num + 1 + 
+                          kFeature_num * kField * kFactor;
+  vector<real_t>* para = ffm.GetParameter();
+  for (index_t i = 0; i < num_parameter; ++i) {
+    EXPECT_EQ((*para)[i], 0.0);
+  }
 }
 
 } // namespace f2m
