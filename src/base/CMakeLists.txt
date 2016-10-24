@@ -1,5 +1,5 @@
 # Build library base
-add_library(base logging.cc)
+add_library(base logging.cc split_string.cc)
 
 # Install library and header files
 install(TARGETS base DESTINATION lib/base)

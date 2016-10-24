@@ -108,5 +108,6 @@ link_directories(
 add_subdirectory(gtest)
 add_subdirectory(src/base)
 add_subdirectory(src/data)
+add_subdirectory(src/reader)
 
 

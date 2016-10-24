@@ -25,11 +25,14 @@ output to a DMatrix format.
 #ifndef F2M_READER_PARSER_H_
 #define F2M_READER_PARSER_H_
 
+#include <stdlib.h>
+
 #include <vector>
 #include <string>
 
 #include "src/base/common.h"
 #include "src/base/logging.h"
+#include "src/base/split_string.h"
 #include "src/data/data_structure.h"
 #include "src/reader/reader.h"
 
@@ -38,14 +41,42 @@ using std::string;
 
 namespace f2m {
 
-// Given a StringList, parse it to a DMatrix.
+typedef vector<string> StringList;
+
+// Given a StringList, parse it to a DMatrix format.
 class Parser {
  public:
-  static void Parse(const StringList* list, DMatrix* matrix) {
+  virtual void Parse(const StringList* list, 
+                     DMatrix* matrix, 
+                     bool ffm = false) {
     CHECK_NOTNULL(list);
     CHECK_NOTNULL(matrix);
-    CHECK_GT(list->num_samples, 0);
-    
+    CHECK_GT(list->size(), 0);
+    CHECK_EQ(list->size(), matrix->row_size);
+    for (uint32 i = 0; i < list->size(); ++i) {
+      // parse the following format:
+      // [0:12.234 3:0.123 6:0.21 7:1234] for LR and FM, or
+      // [0:12.234:0 3:0.123:1 6:0.21:2 7:1234:3] for FFM
+      StringList items;
+      SplitStringUsing((*list)[i], "\t", &items);
+      index_t len = items.size() - 1;
+      matrix->Y[i] = atof(items[len].c_str());
+      matrix->row[i].resize(len, ffm);
+      for (index_t j = 0; j < len; ++j) {
+        StringList tmp_item; 
+        SplitStringUsing(items[j], ":", &tmp_item);
+        if (ffm) {
+          CHECK_EQ(tmp_item.size(), 3); 
+        } else {
+          CHECK_EQ(tmp_item.size(), 2);
+        }
+        matrix->row[i].idx[j] = atoi(tmp_item[0].c_str());
+        matrix->row[i].X[j] = atof(tmp_item[1].c_str());
+        if (ffm) {
+          matrix->row[i].field[j] =  atoi(tmp_item[2].c_str());
+        }
+      }
+    }
   }
 };
 
