@@ -48,10 +48,9 @@ class Model {
 
   // Save model to disk file. 
   void SaveModel(const string& filename);
-
   // Load model from disk file.
   void LoadModel(const string& filename);
-
+  // get model prameters.
   vector<real_t>* GetParameter() { return &m_parameters; }
 
  private:

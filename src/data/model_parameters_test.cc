@@ -37,8 +37,8 @@ const uint32 kField = 10;
 const string kFilename = "/tmp/test_model.binary";
 
 TEST(MODEL_TEST, Init) {
-  // Init LR
-  Model model_lr(kFeature_num, LR);
+  // Init LR using gaussion.
+  Model model_lr(kFeature_num, LR, 0, 0, true);
   vector<real_t>* para = model_lr.GetParameter();
   EXPECT_EQ(para->size(), kFeature_num + 1);
   // Init FM
@@ -46,8 +46,8 @@ TEST(MODEL_TEST, Init) {
   para = model_fm.GetParameter();
   EXPECT_EQ(para->size(), kFeature_num + 1 + 
                           kFeature_num * kFactor);
-  // Init FFM with gaussion distribution.
-  Model model_ffm(kFeature_num, FFM, kFactor, kField, true);
+  // Init FFM
+  Model model_ffm(kFeature_num, FFM, kFactor, kField);
   para = model_ffm.GetParameter();
   EXPECT_EQ(para->size(), kFeature_num + 1 + 
                           kFeature_num * kFactor * kField);

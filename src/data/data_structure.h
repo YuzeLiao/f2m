@@ -84,14 +84,12 @@ struct DMatrix {
     row_size = size;
     model_type = type;
   }
-
   ~DMatrix() {
     // clear the SparseRow pointers.
     for (index_t i = 0; i < row_size; ++i) {
       delete row[i];
     }
   }
-
   // When we sample from disk, we need to use this
   // function to initialize the SparseRow pointers. 
   void InitSparseRow() {
@@ -99,7 +97,6 @@ struct DMatrix {
       row[i] = new SparseRow();
     }   
   }
- 
   // Storing a set of SparseRow.
   // Note that here we use pointer to implement zero copy
   // when we load all data into the memory buffer.
