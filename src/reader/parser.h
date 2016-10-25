@@ -46,34 +46,32 @@ typedef vector<string> StringList;
 // Given a StringList, parse it to a DMatrix format.
 class Parser {
  public:
-  virtual void Parse(const StringList* list, 
-                     DMatrix* matrix, 
-                     bool ffm = false) {
-    CHECK_NOTNULL(list);
-    CHECK_NOTNULL(matrix);
-    CHECK_GT(list->size(), 0);
-    CHECK_EQ(list->size(), matrix->row_size);
-    for (uint32 i = 0; i < list->size(); ++i) {
+  virtual void Parse(const StringList& list, 
+                     DMatrix& matrix) {
+    CHECK_GT(list.size(), 0);
+    CHECK_EQ(list.size(), matrix.row_size);
+    for (index_t i = 0; i < list.size(); ++i) {
       // parse the following format:
       // [0:12.234 3:0.123 6:0.21 7:1234] for LR and FM, or
       // [0:12.234:0 3:0.123:1 6:0.21:2 7:1234:3] for FFM
       StringList items;
-      SplitStringUsing((*list)[i], "\t", &items);
+      SplitStringUsing(list[i], "\t", &items);
       index_t len = items.size() - 1;
-      matrix->Y[i] = atof(items[len].c_str());
-      matrix->row[i].resize(len, ffm);
+      matrix.Y[i] = atof(items[len].c_str());
+      CHECK_NOTNULL(matrix.row[i]);
+      matrix.row[i]->resize(len, matrix.model_type);
       for (index_t j = 0; j < len; ++j) {
         StringList tmp_item; 
         SplitStringUsing(items[j], ":", &tmp_item);
-        if (ffm) {
-          CHECK_EQ(tmp_item.size(), 3); 
+        if (matrix.model_type == FFM) {
+          CHECK_EQ(tmp_item.size(), 3);
         } else {
           CHECK_EQ(tmp_item.size(), 2);
         }
-        matrix->row[i].idx[j] = atoi(tmp_item[0].c_str());
-        matrix->row[i].X[j] = atof(tmp_item[1].c_str());
-        if (ffm) {
-          matrix->row[i].field[j] =  atoi(tmp_item[2].c_str());
+        matrix.row[i]->idx[j] = atoi(tmp_item[0].c_str());
+        matrix.row[i]->X[j] = atof(tmp_item[1].c_str());
+        if (matrix.model_type == FFM) {
+          matrix.row[i]->field[j] = atoi(tmp_item[2].c_str());
         }
       }
     }

@@ -34,8 +34,6 @@ using std::string;
 
 namespace f2m {
 
-enum ModelType { LR, FM, FFM };
-
 // Model is responsible for storing the global model prameters.
 // Note that, we represent the model parameters in a flat way, that is,
 // no matter in LR, FM, or FFM, we store all the parameters in a big array.

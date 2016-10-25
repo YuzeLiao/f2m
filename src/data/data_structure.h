@@ -39,20 +39,26 @@ typedef float real_t;
 // or the size of model parameters. 
 typedef uint32 index_t;
 
+// What model we use in this task.
+enum ModelType { LR, FM, FFM };
+
 // We use the SparseRow to store one line of the input data,
 // which is parsed from the StringList.
 // Notice that the entry of 'field' is optional, and 
 // it used only for the FFM task. 
 struct SparseRow {
-  // For LR and FM, field = false (default).
-  // For FFM, we need to set 'ffm = true' .
-  void resize(index_t len, bool ffm = false) {
+  // In different iteration the row size may be 
+  // different, so we need to resize it.
+  void resize(index_t len, ModelType type) {
     CHECK_GT(len, 0);
+    size = len;
     X.resize(len);
     idx.resize(len);
-    if (ffm) 
+    if (type == FFM) {
       field.resize(len);
-    size = len;
+    } else {
+      field.resize(0);
+    }
   }
   // X can be used to store both the numerical feature
   // and the categorical features. 
@@ -67,12 +73,33 @@ struct SparseRow {
 
 // DMatrix (data matrix) is used to store batch of data, 
 // which can be used for both trainning and prediction. 
+// Note that DMatrix can also be a memory buffer to store
+// all the trainning data, which will be sampled by another 
+// DMatrix in each iteration.
 struct DMatrix {
-  DMatrix(uint32 size) {
+  DMatrix(index_t size, ModelType type) {
+    CHECK_GT(size, 0);
     row.resize(size);
     Y.resize(size);
     row_size = size;
+    model_type = type;
   }
+
+  ~DMatrix() {
+    // clear the SparseRow pointers.
+    for (index_t i = 0; i < row_size; ++i) {
+      delete row[i];
+    }
+  }
+
+  // When we sample from disk, we need to use this
+  // function to initialize the SparseRow pointers. 
+  void InitSparseRow() {
+    for (index_t i = 0; i < row_size; ++i) {
+      row[i] = new SparseRow();
+    }   
+  }
+ 
   // Storing a set of SparseRow.
   // Note that here we use pointer to implement zero copy
   // when we load all data into the memory buffer.
@@ -82,6 +109,10 @@ struct DMatrix {
   vector<real_t> Y;
   // Size of DMatrix
   index_t row_size;
+  // model type
+  ModelType model_type;
+
+  DISALLOW_COPY_AND_ASSIGN(DMatrix);
 };
 
 // SparseGrad is used to store the calculated gradient.

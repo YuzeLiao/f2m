@@ -43,19 +43,20 @@ TEST(PARSER_TEST, Parse_LR_FM) {
   for (index_t i = 0; i < kNum_lines; ++i) {
     list[i] = kStr;
   }
-  DMatrix matrix(kNum_lines);
+  DMatrix matrix(kNum_lines, LR);
+  matrix.InitSparseRow();
   Parser parser;
-  parser.Parse(&list, &matrix);
+  parser.Parse(list, matrix);
   EXPECT_EQ(matrix.row_size, kNum_lines);
   EXPECT_EQ(matrix.row.size(), kNum_lines);
   EXPECT_EQ(matrix.Y.size(), kNum_lines);
   for (index_t i = 0; i < kNum_lines; ++i) {
-    EXPECT_EQ(matrix.row[i].X.size(), kLen);
-    EXPECT_EQ(matrix.row[i].idx.size(), kLen);
+    EXPECT_EQ(matrix.row[i]->X.size(), kLen);
+    EXPECT_EQ(matrix.row[i]->idx.size(), kLen);
     EXPECT_EQ(matrix.Y[i], (real_t(0)));
     for (index_t j = 0; j < kLen; ++j) {
-      EXPECT_EQ(matrix.row[i].X[j], (real_t)(0.123));
-      EXPECT_EQ(matrix.row[i].idx[j], j);
+      EXPECT_EQ(matrix.row[i]->X[j], (real_t)(0.123));
+      EXPECT_EQ(matrix.row[i]->idx[j], j);
     }
   }
 }
@@ -65,21 +66,22 @@ TEST(PARSER_TEST, Parse_FFM) {
   for (index_t i = 0; i < kNum_lines; ++i) {
     list[i] = kStrFFM;
   }
-  DMatrix matrix(kNum_lines);
+  DMatrix matrix(kNum_lines, FFM);
+  matrix.InitSparseRow();
   Parser parser;
-  parser.Parse(&list, &matrix, true);
+  parser.Parse(list, matrix);
   EXPECT_EQ(matrix.row_size, kNum_lines);
   EXPECT_EQ(matrix.row.size(), kNum_lines);
   EXPECT_EQ(matrix.Y.size(), kNum_lines);
   for (index_t i = 0; i < kNum_lines; ++i) {
-    EXPECT_EQ(matrix.row[i].X.size(), kLen);
-    EXPECT_EQ(matrix.row[i].idx.size(), kLen);
-    EXPECT_EQ(matrix.row[i].field.size(), kLen);
+    EXPECT_EQ(matrix.row[i]->X.size(), kLen);
+    EXPECT_EQ(matrix.row[i]->idx.size(), kLen);
+    EXPECT_EQ(matrix.row[i]->field.size(), kLen);
     EXPECT_EQ(matrix.Y[i], (real_t)(1));
     for (index_t j = 0; j < kLen; ++j) {
-      EXPECT_EQ(matrix.row[i].X[j], (real_t(0.123)));
-      EXPECT_EQ(matrix.row[i].idx[j], j);
-      EXPECT_EQ(matrix.row[i].field[j], j);
+      EXPECT_EQ(matrix.row[i]->X[j], (real_t(0.123)));
+      EXPECT_EQ(matrix.row[i]->idx[j], j);
+      EXPECT_EQ(matrix.row[i]->field[j], j);
     }
   }
 }
