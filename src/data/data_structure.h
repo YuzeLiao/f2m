@@ -74,7 +74,9 @@ struct DMatrix {
     row_size = size;
   }
   // Storing a set of SparseRow.
-  vector<SparseRow> row;
+  // Note that here we use pointer to implement zero copy
+  // when we load all data into the memory buffer.
+  vector<SparseRow*> row;
   // Y can be either -1 or 0 (for negetive examples),
   // and be 1 (for positive examples). 
   vector<real_t> Y;

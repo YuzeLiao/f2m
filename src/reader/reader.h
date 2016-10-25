@@ -104,9 +104,9 @@ class Reader {
   bool m_in_memory;                 // load all data into memory.
   FILE* m_file_ptr;                 // maintain current file pointer.
 
-  DMatrix* m_data_buf;              // bufferring all data in memory.
-  DMatrix* m_data_samples;          // data samples for trainning in
-                                    // each iteration.
+  DMatrix m_data_buf;              // bufferring all data in memory.
+  DMatrix m_data_samples;          // data samples for trainning in
+                                   // each iteration.
   DMatrix* SampleFromDisk();
   DMatrix* SampleFromMemory();
   uint32 ReadLineFromMemory(char* line, char* buf, uint32 len);
