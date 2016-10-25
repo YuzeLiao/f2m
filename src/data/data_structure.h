@@ -111,8 +111,6 @@ struct DMatrix {
   index_t row_size;
   // model type
   ModelType model_type;
-
-  DISALLOW_COPY_AND_ASSIGN(DMatrix);
 };
 
 // SparseGrad is used to store the calculated gradient.
