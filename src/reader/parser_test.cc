@@ -35,7 +35,7 @@ namespace f2m {
     
 const string kStr = "0:0.123\t1:0.123\t2:0.123\t3:0.123\t4:0.123\t0";
 const string kStrFFM = "0:0.123:0\t1:0.123:1\t2:0.123:2\t3:0.123:3\t4:0.123:4\t1";
-const index_t kNum_lines = 10000;
+const index_t kNum_lines = 100000;
 const index_t kLen = 5;
 
 TEST(PARSER_TEST, Parse_LR_FM) {

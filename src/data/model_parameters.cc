@@ -40,7 +40,7 @@ namespace f2m {
 const real_t kInitMean = 0.0;
 const real_t kInitStdev = 0.01;
 // The buffer must be fitted with just N elments.
-const uint32 kMaxBufSize = sizeof(real_t) * 10 * 1024 * 1024; // 320 MB
+const uint32 kMaxBufSize = sizeof(real_t) * 1024 * 1024; // 32 MB
 const uint32 kElemSize = sizeof(real_t);
 
 Model::Model(index_t feature_num, ModelType type,
@@ -96,11 +96,12 @@ void Model::SaveModel(const string& filename) {
     // buffer is full
     if (total_size + kElemSize > kMaxBufSize) {
       // from file_util.h
+      // flush the memory buffer
       if (kMaxBufSize != WriteDataToDisk(pfile, buf, total_size)) {
         LOG(FATAL) << "Write model to file " 
                    << filename << " error.\n";
       }
-      total_size = 0;
+      total_size = 0; 
       --i;
     } else { // add value to in-memory buffer
       char *ch = reinterpret_cast<char*>(&(m_parameters[i]));
