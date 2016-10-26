@@ -42,7 +42,7 @@ class Model {
   // By default, the constructor is used for LR.
   Model(index_t feature_num, 
         ModelType type = LR,
-        int k = 0, 
+        uint32 k = 0, 
         index_t field_num = 0,
         bool gaussian = false);
 
@@ -50,7 +50,7 @@ class Model {
   void SaveModel(const string& filename);
   // Load model from disk file.
   void LoadModel(const string& filename);
-  // get model prameters.
+  // Get model parameters.
   vector<real_t>* GetParameter() { return &m_parameters; }
 
  private:
@@ -58,7 +58,7 @@ class Model {
   vector<real_t> m_parameters;    // To store the global model parameters.
   index_t m_feature_num;          // number of features.
   index_t m_parameters_num;       // number of parameters.
-  int m_k;                        // factor size for FM and FFM.
+  uint32 m_k;                     // factor size for FM and FFM.
   index_t m_field_num;            // number of field. (only for FFM).
 
   // Initialize model parameters using 

@@ -44,7 +44,7 @@ const uint32 kMaxBufSize = sizeof(real_t) * 1024 * 1024; // 32 MB
 const uint32 kElemSize = sizeof(real_t);
 
 Model::Model(index_t feature_num, ModelType type,
-             int k, index_t field_num, bool gaussian) :
+             uint32 k, index_t field_num, bool gaussian) :
   m_type(type),
   m_feature_num(feature_num),
   m_k(k),
