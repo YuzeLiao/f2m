@@ -34,7 +34,6 @@ output to a DMatrix format.
 #include "src/base/logging.h"
 #include "src/base/split_string.h"
 #include "src/data/data_structure.h"
-#include "src/reader/reader.h"
 
 using std::vector;
 using std::string;
@@ -46,10 +45,10 @@ typedef vector<string> StringList;
 // Given a StringList, parse it to a DMatrix format.
 class Parser {
  public:
-  virtual void Parse(const StringList& list, 
-                     DMatrix& matrix) {
+  void Parse(const StringList& list, 
+             DMatrix& matrix) {
     CHECK_GT(list.size(), 0);
-    CHECK_EQ(list.size(), matrix.row_size);
+    CHECK_GT(matrix.row_size, 0);
     for (index_t i = 0; i < list.size(); ++i) {
       // parse the following format:
       // [0:12.234 3:0.123 6:0.21 7:1234] for LR and FM, or

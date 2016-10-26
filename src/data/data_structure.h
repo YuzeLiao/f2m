@@ -54,11 +54,8 @@ struct SparseRow {
     size = len;
     X.resize(len);
     idx.resize(len);
-    if (type == FFM) {
+    if (type == FFM) 
       field.resize(len);
-    } else {
-      field.resize(0);
-    }
   }
   // X can be used to store both the numerical feature
   // and the categorical features. 
@@ -77,13 +74,15 @@ struct SparseRow {
 // all the trainning data, which will be sampled by another 
 // DMatrix in each iteration.
 struct DMatrix {
-  DMatrix(index_t size, ModelType type) {
+  // resize
+  void resize(index_t size, ModelType type) {
     CHECK_GT(size, 0);
     row.resize(size);
     Y.resize(size);
     row_size = size;
     model_type = type;
   }
+  // De-Constructor
   ~DMatrix() {
     // clear the SparseRow pointers.
     for (index_t i = 0; i < row_size; ++i) {

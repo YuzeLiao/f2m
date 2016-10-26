@@ -30,7 +30,6 @@ This file is the implementation of reader.h
 #include "src/base/common.h"
 #include "src/base/logging.h"
 #include "src/base/file_util.h"
-#include "src/reader/parser.h"
 
 using std::vector;
 using std::string;
@@ -43,69 +42,63 @@ typedef vector<string> StringList;
 
 Reader::Reader(const string& filename,
                uint32 num_samples,
+               ModelType type,
+               bool loop,
                bool in_memory) :
   m_filename(filename),
   m_num_samples(num_samples),
-  m_in_memory(in_memory) {
+  m_loop(loop),
+  m_in_memory(in_memory),
+  m_type(type) {
     CHECK_GT(m_num_samples, 0);
     CHECK_NE(filename.empty(), true);
+    m_data_samples.resize(m_num_samples, m_type);
     m_file_ptr = OpenFileOrDie(m_filename.c_str(), "r");
-    m_data_samples = new DMatrix(m_num_samples);
-}
-
-void Reader:Init() {
-  // If the input data is small, 
-  // we can read all data into m_data_buf.
-  if (m_in_memory) {
-    // get the size of current file.
-    fseek(m_file_ptr, 0, SEEK_END);
-    uint64 total_size = ftell(m_file_ptr);
-    rewind(m_file_ptr);
-    char* buffer = NULL;
-    try {
-      buffer = new char[total_size];
-    } catch (std::bad_alloc&) {
-      LOG(FATAL) << "Cannot allocate enough memory for Reader.";
-    }
-    // get the number of line.
-    uint32 num_line = 0;
-    for (uint64 i = 0; i < total_size; ++i) {
-      if (buffer[i] == '\n') {
-        num_line++;
+    // If the input data is small, 
+    // we can read all data into m_data_buf.
+    if (m_in_memory) {
+      // get the size of current file.
+      fseek(m_file_ptr, 0, SEEK_END);
+      uint64 total_size = ftell(m_file_ptr);
+      rewind(m_file_ptr);
+      char* buffer = NULL;
+      try {
+        buffer = new char[total_size];
+      } catch (std::bad_alloc&) {
+        LOG(FATAL) << "Cannot allocate enough memory for Reader.";
       }
-    }
-    // parse line to m_data_buf.
-    StringList list(num_line);
-    char* line = new char[kMaxLineSize];
-    for (uint32 i = 0; i < num_line; ++i) {
-      uint32 read_size = ReadLineFromMemory(line, buffer, 
-                                            total_size);
-      line[read_size-1] = '\0';
-      // Handle some windows txt format.
-      if (read_size > 1 && line[read_size-2] == '\r') {
-        line[read_size-2] = '\0';
+      // get the number of line.
+      uint32 num_line = 0;
+      for (uint64 i = 0; i < total_size; ++i) {
+        if (buffer[i] == '\n') {
+          num_line++;
+        }
       }
-      list[i].assign(line);
+      m_data_buf.resize(num_line, m_type);
+      // parse line to m_data_buf.
+      StringList list(num_line);
+      char* line = new char[kMaxLineSize];
+      for (uint32 i = 0; i < num_line; ++i) {
+        uint32 read_size = ReadLineFromMemory(line, buffer, 
+                                              total_size);
+        line[read_size-1] = '\0';
+        // Handle some windows txt format.
+        if (read_size > 1 && line[read_size-2] == '\r') {
+          line[read_size-2] = '\0';
+        }
+        list[i].assign(line);
+      }
+      // parse StringList to DMatrix
+      m_parser.Parse(list, m_data_buf);
+    } else { // Sample data from disk file.
+      m_data_samples.InitSparseRow();
     }
-    // parse StringList to DMatrix
-    Parser.parse(&list, m_data_buf);
-  } else { // Sample data from disk file.
-    m_data_buf = NULL;
-  }
 }
 
 Reader::~Reader() {
   if (m_file_ptr != NULL) {
     Close(m_file_ptr);
     m_file_ptr = NULL;
-  }
-
-  if (m_data_buf != NULL) {
-    delete m_data_buf;
-  }
-
-  if (m_data_samples != NULL) {
-    delete m_data_samples;
   }
 }
 
@@ -116,11 +109,17 @@ DMatrix* Reader::Samples() {
 
 DMatrix* Reader::SampleFromDisk() {
   static char* line = new char[kMaxLineSize];
+  static StringList list(m_num_samples);
   // Sample m_num_samples lines data from disk
+  uint32 num_line = 0;
   for (uint32 i = 0; i < m_num_samples; ++i) {
     if (fgets(line, kMaxLineSize, m_file_ptr) == NULL) {
       // Either ferror or feof. 
-      break;
+      if (m_loop) {
+        fseek(m_file_ptr, 0, SEEK_SET);
+        i--; // re-read
+        continue;
+      } else break;
     }
     uint32 read_len = strlen(line);
     if (line[read_len-1] != '\n') {
@@ -132,21 +131,27 @@ DMatrix* Reader::SampleFromDisk() {
         line[read_len-2] = '\0';
       }
     }
-    m_data_samples.row[i].assign(line);
-    m_data_samples.num_samples++;
+    list[i].assign(line);
+    num_line++;
   }
+  // End of file
+  if (num_line != m_num_samples) {
+    m_data_samples.resize(num_line, m_type);
+  }
+  m_parser.Parse(list, m_data_samples);
   return &m_data_samples;
 }
 
 DMatrix* Reader::SampleFromMemory() {
-  
+
+  return &m_data_samples;
 }
 
 uint32 Reader::ReadLineFromMemory(char* line, char* buf, uint32 len) {
   static uint32 start_pos = 0;
   static uint32 end_pos = 0;
   // End of the file
-  if (end_pos >= buf_len) {
+  if (end_pos >= len) {
     if (m_loop) { // return to the begining of the file.
       start_pos = 0;
       end_pos = 0;
