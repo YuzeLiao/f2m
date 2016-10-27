@@ -50,7 +50,7 @@ struct SparseRow {
   // In different iteration the row size may be 
   // different, so we need to resize it.
   void resize(index_t len, ModelType type) {
-    CHECK_GT(len, 0);
+    CHECK_GE(len, 0);
     size = len;
     X.resize(len);
     idx.resize(len);
@@ -76,18 +76,11 @@ struct SparseRow {
 struct DMatrix {
   // resize
   void resize(index_t size, ModelType type) {
-    CHECK_GT(size, 0);
+    CHECK_GE(size, 0);
     row.resize(size);
     Y.resize(size);
     row_size = size;
     model_type = type;
-  }
-  // De-Constructor
-  ~DMatrix() {
-    // clear the SparseRow pointers.
-    for (index_t i = 0; i < row_size; ++i) {
-      delete row[i];
-    }
   }
   // When we sample from disk, we need to use this
   // function to initialize the SparseRow pointers. 

@@ -45,11 +45,11 @@ typedef vector<string> StringList;
 // Given a StringList, parse it to a DMatrix format.
 class Parser {
  public:
-  void Parse(const StringList& list, 
-             DMatrix& matrix) {
-    CHECK_GT(list.size(), 0);
-    CHECK_GT(matrix.row_size, 0);
-    for (index_t i = 0; i < list.size(); ++i) {
+  virtual void Parse(const StringList& list, 
+                     DMatrix& matrix) {
+    CHECK_GE(list.size(), 0);
+    CHECK_GE(matrix.row_size, 0);
+    for (index_t i = 0; i < matrix.row_size; ++i) {
       // parse the following format:
       // [0:12.234 3:0.123 6:0.21 7:1234] for LR and FM, or
       // [0:12.234:0 3:0.123:1 6:0.21:2 7:1234:3] for FFM

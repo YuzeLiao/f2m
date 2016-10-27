@@ -67,6 +67,11 @@ Reader::Reader(const string& filename,
       } catch (std::bad_alloc&) {
         LOG(FATAL) << "Cannot allocate enough memory for Reader.";
       }
+      // read all data
+      uint64 read_size = fread(buffer, 1, total_size, m_file_ptr);
+      if (read_size != total_size) {
+        LOG(FATAL) << "Read file error: " << m_filename;
+      }
       // get the number of line.
       uint32 num_line = 0;
       for (uint64 i = 0; i < total_size; ++i) {
@@ -75,12 +80,19 @@ Reader::Reader(const string& filename,
         }
       }
       m_data_buf.resize(num_line, m_type);
-      // parse line to m_data_buf.
+      m_data_buf.InitSparseRow();
+      // parse line to StringList.
       StringList list(num_line);
       char* line = new char[kMaxLineSize];
+      uint32 start_pos = 0;
       for (uint32 i = 0; i < num_line; ++i) {
-        uint32 read_size = ReadLineFromMemory(line, buffer, 
+        uint32 read_size = ReadLineFromMemory(line, buffer,
+                                              start_pos,
                                               total_size);
+        if (read_size == 0) {
+          LOG(FATAL) << "Read error: " << read_size << " bytes.";
+        }
+        start_pos += read_size;
         line[read_size-1] = '\0';
         // Handle some windows txt format.
         if (read_size > 1 && line[read_size-2] == '\r') {
@@ -143,30 +155,41 @@ DMatrix* Reader::SampleFromDisk() {
 }
 
 DMatrix* Reader::SampleFromMemory() {
-
+  static index_t pos = 0;
+  uint32 num_line = 0;
+  for (index_t i = 0; i < m_num_samples; ++i) {
+    // End of file
+    if (pos >= m_data_buf.row_size) {
+      if (m_loop) {
+        pos = 0;
+      } else {
+        break;
+      }
+    }
+    m_data_samples.row[i] = m_data_buf.row[pos];
+    m_data_samples.Y[i] = m_data_buf.Y[pos];
+    pos++;
+    num_line++;
+  }
+  // End of file
+  if (num_line != m_num_samples) {
+    m_data_samples.resize(num_line, m_type);
+  }
   return &m_data_samples;
 }
 
-uint32 Reader::ReadLineFromMemory(char* line, char* buf, uint32 len) {
-  static uint32 start_pos = 0;
-  static uint32 end_pos = 0;
+uint32 Reader::ReadLineFromMemory(char* line, char* buf, 
+                                  uint32 start_pos, 
+                                  uint32 len) {
   // End of the file
-  if (end_pos >= len) {
-    if (m_loop) { // return to the begining of the file.
-      start_pos = 0;
-      end_pos = 0;
-    } else {
-      return 0;
-    }
-  }
-  // read one line
+  if (start_pos >= len) return 0;
+  uint32 end_pos = start_pos;
   while (*(buf+end_pos) != '\n') {++end_pos;}
   uint32 read_size = end_pos - start_pos + 1;
   if (read_size > kMaxLineSize) {
     LOG(FATAL) << "Encountered a too-long line.";
   }
   memcpy(line, buf+start_pos, read_size);
-  start_pos = ++end_pos;
   return read_size;
 }
 
