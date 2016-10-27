@@ -166,6 +166,7 @@ DMatrix* Reader::SampleFromMemory() {
         break;
       }
     }
+    // Copy data from buffer to data samples
     m_data_samples.row[i] = m_data_buf.row[pos];
     m_data_samples.Y[i] = m_data_buf.Y[pos];
     pos++;

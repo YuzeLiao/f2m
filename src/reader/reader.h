@@ -136,7 +136,7 @@ class Reader {
   DMatrix* SampleFromDisk();
   DMatrix* SampleFromMemory();
   uint32 ReadLineFromMemory(char* line, char* buf, 
-                            uint32 start_pos, uint32 len);
+                            uint32 pos, uint32 len);
 
   DISALLOW_COPY_AND_ASSIGN(Reader);
 };

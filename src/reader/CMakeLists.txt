@@ -10,6 +10,9 @@ target_link_libraries(parser_test gtest_main ${LIBS})
 add_executable(reader_test reader_test.cc)
 target_link_libraries(reader_test gtest_main ${LIBS})
 
+add_executable(reader_mushroom_criteo_test reader_mushroom_criteo_test.cc)
+target_link_libraries(reader_mushroom_criteo_test gtest_main ${LIBS})
+
 # Install library and header files
 FILE(GLOB HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 install(FILES ${HEADER_FILES} DESTINATION include/reader)

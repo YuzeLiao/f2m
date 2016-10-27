@@ -35,11 +35,12 @@ using std::string;
 namespace f2m {
     
 const string kTestfilename = "/tmp/test_reader";
-const string kStr = "0:0.123\t1:0.123\t2:0.123\t0\n";
-const string kStrFFM = "0:0.123:0\t1:0.123:1\t2:0.123:2\t1\n";
+const string kStr = "0\t0:0.123\t1:0.123\t2:0.123\n";
+const string kStrFFM = "1\t0:0:0.123\t1:1:0.123\t2:2:0.123\n";
 const index_t kFeatureNum = 3;
 const index_t kNumLines = 100000;
 const index_t kNumSamples = 1000;
+const int iteration_num = 1000;
 
 class ReaderTest : public ::testing::Test {
  protected:
@@ -121,13 +122,13 @@ TEST_F(ReaderTest, SampleFromDiskInLoop) {
   // lr
   Reader reader_lr(lr_file, kNumSamples, LR, true);
   DMatrix *matrix = NULL;
-  for (int i = 0; i < 5000; ++i) {
+  for (int i = 0; i < iteration_num; ++i) {
     matrix = reader_lr.Samples();
     CheckLR(matrix);
   }
   // ffm
   Reader reader_ffm(ffm_file, kNumSamples, FFM, true);
-  for (int i = 0; i < 5000; ++i) {
+  for (int i = 0; i < iteration_num; ++i) {
     matrix = reader_ffm.Samples();
     CheckFFM(matrix);
   }
@@ -159,13 +160,13 @@ TEST_F(ReaderTest, SampleFromMemoryInLoop) {
   // lr
   Reader reader_lr(lr_file, kNumSamples, LR, true, true);
   DMatrix* matrix = NULL;
-  for (int i = 0; i < 5000; ++i) {
+  for (int i = 0; i < iteration_num; ++i) {
     matrix = reader_lr.Samples();
     CheckLR(matrix);
   }
   // ffm
   Reader reader_ffm(ffm_file, kNumSamples, FFM, true, true);
-  for (int i = 0; i < 5000; ++i) {
+  for (int i = 0; i < iteration_num; ++i) {
     matrix = reader_ffm.Samples();
     CheckFFM(matrix);
   }
