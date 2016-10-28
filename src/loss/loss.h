@@ -58,7 +58,7 @@ class Loss {
 
   // Given the prediction results and the groudtruth, return 
   // current loss value. Here we use the cross-enropy loss by default.
-  // Note that the cross-enropy loss take 1 and -1 for positive and
+  // Note that the cross-enropy loss takes 1 and -1 for positive and
   // negative examples, respectivly.
   virtual real_t Evaluate(const vector<real_t>& pred,
                           const vector<real_t>& label) const {
