@@ -18,15 +18,13 @@
 Copyright (c) 2016 by contributors.
 Author: Chao Ma (mctt90@gmail.com)
 
-This file defines the base class Loss, which is the 
-core part of ML algorithms.
+This file defines the logistic regression loss.
 */
 
-#ifndef F2M_LOSS_LOSS_H_
-#define F2M_LOSS_LOSS_H_
+#ifndef F2M_LOSS_LOGIT_LOSS_H_
+#define F2M_LOSS_LOGIT_LOSS_H_
 
 #include <vector>
-#include <cmath> // for log() and exp()
 
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
@@ -36,44 +34,31 @@ using std::vector;
 
 namespace f2m {
 
-// The basic class of loss function.
-// Loss is an abstract class, which can be implemented by real
-// loss functions such as logistic regression loss (logit_loss.h),
-// FM loss (fm_loss.h), and FFM loss (ffm_loss.h)
-class Loss {
+// Logistic regression Loss, Math:
+//  [ loss(x, y, w) = log(1 + exp(-y * <w, x>)) ]
+class LogitLoss : public Loss {
  public:
-  virtual ~Loss() {}
-
-  // Given the input DMatrix and current model, return 
-  // the prediction results. 
-  virtual void Predict(const DMatrix* matrix,
-                       const Model& param,
-                       vector<real_t>& pred) = 0;
+  ~LogitLoss() {}
 
   // Given the input DMatrix and current model, return
-  // the calculated gradient.
-  virtual void CalcGrad(const DMatrix* matrix,
-                        const Model& param,
-                        SparseGrad& grad) = 0;
-
-  // Given the prediction results and the groudtruth, return 
-  // current loss value. Here we use the cross-enropy loss by default.
-  // Note that the cross-enropy loss take 1 and -1 for positive and
-  // negative examples, respectivly.
-  virtual real_t Evaluate(const vector<real_t>& pred,
-                          const vector<real_t>& label) const {
-    real_t objv = 0.0;
-    for (index_t i = 0; i < pred.size(); ++i) {
-      real_t y = label[i] > 0 ? 1 : -1;
-      objv += log(1 + exp(-y*pred[i]));
-    }
-    return objv;
+  // the prediction results. Math:
+  //  [ pred = <x, w> ]
+  void Predict(const DMatrix* matrix,
+               const Madel& param,
+               vector<real_t>& pred) {
+    
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Loss);
+  // Given the prediction results and the current model, return
+  // the calculated gradient. Math:
+  //  [ (-y / ( (1/exp(-y*<w,x>))  + 1 )) * xi ]
+  void CalcGrad(const DMatrix& matrix,
+                const Model& param,
+                SparseGrad& grad) {
+
+  }
 };
 
 } // namespace f2m
 
-#endif // F2M_LOSS_LOSS_H_
+#endif // F2M_LOSS_LOGIT_LOSS_H_
