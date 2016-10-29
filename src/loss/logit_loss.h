@@ -66,6 +66,7 @@ class LogitLoss : public Loss {
     CHECK_NOTNULL(matrix);
     CHECK_GT(matrix->row_size, 0);
     vector<real_t>* weight = param.GetParameter();
+    index_t num = 0;
     // each line of trainning examples
     for (index_t i = 0; i < matrix->row_size; ++i) {
       // partial gradient 
@@ -76,7 +77,13 @@ class LogitLoss : public Loss {
       for (index_t j = 0; j < row->size; ++j) {
         index_t pos = row->idx[j];
         real_t w_j = partial_grad * row->X[j];
+        if (num >= grad.w.size()) {
+          // resize
 
+        } 
+        grad.w[num] = w_j;
+        grad.pos_w[num] = pos;
+        num++;
       }
     }
   }
@@ -93,7 +100,6 @@ class LogitLoss : public Loss {
   }
 
   DISALLOW_COPY_AND_ASSIGN(Logistic);
-
 };
 
 } // namespace f2m

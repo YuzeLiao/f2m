@@ -76,7 +76,7 @@ struct SparseRow {
 struct DMatrix {
   // resize
   void resize(index_t size, ModelType type) {
-    CHECK_GE(size, 0);
+    CHECK_GE(size, 0)o
     row.resize(size);
     Y.resize(size);
     row_size = size;
@@ -107,15 +107,14 @@ struct DMatrix {
 // FM, as well as FFM. Flat model stores all the parameters in 
 // a big array.
 struct SparseGrad {
-  // The gradient vector.
-  vector<real_t> gradient;
+  // The gradient w.
+  vector<real_t> w;
+  // The gradient V
+  vector<real_t> v;
   // The position of w.
   vector<index_t> pos_w;
   // The postition of v.
   vector<index_t> pos_v;
-  // Number of active entry.
-  // The size = pos_w.size() + pos_v.size().
-  index_t active_entry_num;
 };
 
 } // namespace f2m
