@@ -79,7 +79,7 @@ class LogitLoss : public Loss {
         real_t w_j = partial_grad * row->X[j];
         if (num >= grad.w.size()) {
           // resize
-
+          grad.w.resize(grad.w.size()*2);
         } 
         grad.w[num] = w_j;
         grad.pos_w[num] = pos;
