@@ -42,18 +42,19 @@ namespace f2m {
 // FM loss (fm_loss.h), and FFM loss (ffm_loss.h)
 class Loss {
  public:
+  Loss() {}
   virtual ~Loss() {}
 
   // Given the input DMatrix and current model, return 
   // the prediction results. 
   virtual void Predict(const DMatrix* matrix,
-                       const Model& param,
+                       Model& param,
                        vector<real_t>& pred) = 0;
 
   // Given the input DMatrix and current model, return
   // the calculated gradient.
   virtual void CalcGrad(const DMatrix* matrix,
-                        const Model& param,
+                        Model& param,
                         SparseGrad& grad) = 0;
 
   // Given the prediction results and the groudtruth, return 
@@ -67,6 +68,7 @@ class Loss {
       real_t y = label[i] > 0 ? 1 : -1;
       objv += log(1 + exp(-y*pred[i]));
     }
+    objv /= pred.size();
     return objv;
   }
 

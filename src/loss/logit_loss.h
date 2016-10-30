@@ -29,6 +29,7 @@ This file defines the logistic regression loss.
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
 #include "src/data/model_parameters.h"
+#include "src/loss/loss.h"
 
 using std::vector;
 
@@ -38,13 +39,14 @@ namespace f2m {
 //  [ loss(x, y, w) = log(1 + exp(-y * <w, x>)) ]
 class LogitLoss : public Loss {
  public:
+  LogitLoss() {}
   ~LogitLoss() {}
 
   // Given the input DMatrix and current model, return
   // the prediction results. Math:
   //  [ pred = <x, w> ]
   void Predict(const DMatrix* matrix,
-               const Madel& param,
+               Model& param,
                vector<real_t>& pred) {
     CHECK_NOTNULL(matrix);
     CHECK_GT(pred.size(), 0);
@@ -61,12 +63,12 @@ class LogitLoss : public Loss {
   // the calculated gradient. Math:
   //  [ (-y / ( (1/exp(-y*<w,x>))  + 1 )) * X ]
   void CalcGrad(const DMatrix* matrix,
-                const Model& param,
+                Model& param,
                 SparseGrad& grad) {
     CHECK_NOTNULL(matrix);
     CHECK_GT(matrix->row_size, 0);
     vector<real_t>* weight = param.GetParameter();
-    index_t num = 0;
+    index_t num  = 0;
     // each line of trainning examples
     for (index_t i = 0; i < matrix->row_size; ++i) {
       // partial gradient 
@@ -86,20 +88,21 @@ class LogitLoss : public Loss {
         num++;
       }
     }
+    grad.size_w = num;
   }
 
  private:
   // Calculate <w,x>
   inline real_t wTx(const SparseRow* row, const vector<real_t>* w) {
     real_t val = 0.0;
-    for (index_t j = 0; j < row_size; ++j) {
+    for (index_t j = 0; j < row->size; ++j) {
       index_t pos = row->idx[j];
       val += (*w)[pos] * row->X[j];
     }
     return val;
   }
 
-  DISALLOW_COPY_AND_ASSIGN(Logistic);
+  DISALLOW_COPY_AND_ASSIGN(LogitLoss);
 };
 
 } // namespace f2m

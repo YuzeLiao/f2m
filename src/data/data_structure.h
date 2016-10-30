@@ -76,7 +76,7 @@ struct SparseRow {
 struct DMatrix {
   // resize
   void resize(index_t size, ModelType type) {
-    CHECK_GE(size, 0)o
+    CHECK_GE(size, 0);
     row.resize(size);
     Y.resize(size);
     row_size = size;
@@ -115,6 +115,10 @@ struct SparseGrad {
   vector<index_t> pos_w;
   // The postition of v.
   vector<index_t> pos_v;
+  // note that size_w may not equal to w.size().
+  index_t size_w;
+  // note that size_v may not equal to v.size().
+  index_t size_v;
 };
 
 } // namespace f2m
