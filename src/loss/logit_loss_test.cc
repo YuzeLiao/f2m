@@ -65,7 +65,29 @@ TEST(LogitLoss, Predict) {
 }
 
 TEST(LogitLoss, CalcGrad) {
-        
+  // DMatrix
+  DMatrix matrix;
+  matrix.resize(100, LR);
+  matrix.InitSparseRow();
+  for (int i = 0; i < matrix.row_size; ++i) {
+    SparseRow* row = matrix.row[i];
+    row->resize(100, LR);
+    matrix.Y[i] = 1.0;
+    for (int j = 0; j < 100; ++j) {
+      row->X[j] = 999;
+      row->idx[j] = j;
+    }
+  }
+  // Model
+  Model model(99);
+  // Loss
+  LogitLoss loss;
+  SparseGrad grad(10000);
+  loss.CalcGrad(&matrix, model, grad);
+  EXPECT_EQ(grad.size_w, 10000);
+  for (int i = 0; i < 10000; ++i) {
+    EXPECT_EQ(grad.w[i], -0);
+  }
 }
 
 } // namespace f2m

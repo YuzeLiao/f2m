@@ -107,6 +107,15 @@ struct DMatrix {
 // FM, as well as FFM. Flat model stores all the parameters in 
 // a big array.
 struct SparseGrad {
+  // Constructor
+  SparseGrad(index_t size) {
+    w.resize(size);
+    v.resize(size);
+    pos_w.resize(size);
+    pos_v.resize(size);
+    size_w = 0;
+    size_v = 0;
+  }
   // The gradient w.
   vector<real_t> w;
   // The gradient V
