@@ -42,6 +42,9 @@ typedef uint32 index_t;
 // What model we use in this task.
 enum ModelType { LR, FM, FFM };
 
+// What regularzation we use in this task.
+enum RegularType { L1, L2, NONE };
+
 // We use the SparseRow to store one line of the input data,
 // which is parsed from the StringList.
 // Notice that the entry of 'field' is optional, and 

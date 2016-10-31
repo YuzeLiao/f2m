@@ -14,24 +14,48 @@
  *  limitations under the License.                                            *
  * -------------------------------------------------------------------------- */
 
-/*
+/* 
+Copyright (c) 2016 by contributors.
 Author: Chao Ma (mctt90@gmail.com)
 
-This file defines the hyper-parameter used by f2m.
+This files defines the SGD updater.
 */
 
-#ifndef F2M_DATA_HYPER_PARAMETER_H_
-#define F2M_DATA_HYPER_PARAMETER_H_
+#ifndef F2M_UPDATE_SGD_UPDATER_H_
+#define F2M_UPDATE_SGD_UPDATER_H_
 
+#include "src/base/common.h"
+#include "src/data/model_parameters.h"
 #include "src/data/data_structure.h"
+#include "src/update/updater.h"
 
 namespace f2m {
 
-struct F2M_PARAM {
-  real_t learning_rate;
-  real_t regu_lamda;
-};
+// Math: [ w -= learning_rate * gradient ]
+//       [ gradient = loss_grad + lamda * regu_grad ]
+class SGDUpdater : public Updater {
+ public:
+  SGDUpdater(Model* model, 
+             real_t learning_rate, 
+             real_t regu_lamda,
+             ModelType model_type = LR,
+             RegularType regu_type = L2)
+    : Updater(model, 
+              learning_rate, 
+              regu_lamda, 
+              model_type, 
+              regu_type) {}
+
+  ~SGDUpdater() {}
+
+ private:
+  void UpdateLR(const SparseGrad& grad);
+  void UpdateFM(const SparseGrad& grad);
+  void UpdateFFM(const SparseGrad& grad);
+
+  DISALLOW_COPY_AND_ASSIGN(Updater);
+};   
 
 } // namespace f2m
 
-#endif // F2M_DATA_HYPER_PARAMETER_H_
+#endif // F2M_UPDATE_SGD_UPDATER_H_
