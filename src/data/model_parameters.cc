@@ -21,7 +21,6 @@ This file is the implementation of model parameters.
 */
 
 #include "src/data/model_parameters.h"
-
 #include <vector>
 #include <string>
 #include <fstream>
@@ -68,7 +67,7 @@ Model::Model(index_t feature_num, ModelType type,
       LOG(FATAL) << "Unknow model type: " << type;
     }
     try {
-      m_parameters.resize(m_parameters_num, 0.0);
+      m_parameters.resize(m_parameters_num, 1.0);
       if (gaussian) {
         InitModelUsingGaussian();
       }

@@ -27,6 +27,7 @@ This file tests logit_loss.h
 
 #include "src/loss/logit_loss.h"
 #include "src/data/data_structure.h"
+#include "src/data/model_parameters.h"
 
 namespace f2m {
 
@@ -40,7 +41,27 @@ TEST(LogitLoss, Evaluate) {
 }
 
 TEST(LogitLoss, Predict) {
-
+  // DMatrix
+  DMatrix matrix;
+  matrix.resize(100, LR);
+  matrix.InitSparseRow();
+  for (int i = 0; i < matrix.row_size; ++i) {
+    SparseRow* row = matrix.row[i];
+    row->resize(100, LR);
+    for (int j = 0; j < 100; ++j) {
+      row->X[j] = 2.0;
+      row->idx[j] = j;
+    }
+  }  
+  // Model
+  Model model(99); // 99 linear terms + 1 bias iterm
+  // Loss
+  LogitLoss loss;
+  vector<real_t> pred(100);
+  loss.Predict(&matrix, model, pred);
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ(pred[i], 200.0);
+  }
 }
 
 TEST(LogitLoss, CalcGrad) {
