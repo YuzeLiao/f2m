@@ -15,7 +15,6 @@
  * -------------------------------------------------------------------------- */
 
 /* 
-Copyright (c) 2016 by contributors.
 Author: Chao Ma (mctt90@gmail.com)
 
 This files defines updateer class, which is responsible for updating

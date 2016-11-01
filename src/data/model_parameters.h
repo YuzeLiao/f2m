@@ -39,13 +39,13 @@ namespace f2m {
 // no matter in LR, FM, or FFM, we store all the parameters in a big array.
 class Model {
  public:
-  // By default, the constructor is used for LR.
+  // Constructors.
   Model(index_t feature_num, 
-        ModelType type = LR,
-        uint32 k = 0, 
-        index_t field_num = 0,
-        bool gaussian = false);
-
+        ModelType type = LR, // for logistic regression by default.
+        int k = 0, 
+        int field_num = 0,
+        bool gaussian = false); // Initialize parameters in 
+                                // a gaussian distribution.
   // Save model to disk file. 
   void SaveModel(const string& filename);
   // Load model from disk file.
@@ -54,15 +54,15 @@ class Model {
   vector<real_t>* GetParameter() { return &m_parameters; }
 
  private:
-  ModelType m_type;               // enum { LR, FM, FFM };
-  vector<real_t> m_parameters;    // To store the global model parameters.
-  index_t m_feature_num;          // number of features.
-  index_t m_parameters_num;       // number of parameters.
-  uint32 m_k;                     // factor size for FM and FFM.
-  index_t m_field_num;            // number of field. (only for FFM).
+  ModelType m_type;                 // enum ModelType { LR, FM, FFM };
+  vector<real_t> m_parameters;      // Store the global model parameters.
+  index_t m_feature_num;            // number of features
+  index_t m_parameters_num;         // number of parameter
+  int m_k;                          // vector size for FM and FFM
+  int m_field_num;                  // number of field (only for FFM)
 
   // Initialize model parameters using 
-  // the random gaussian distribution
+  // arandom gaussian distribution.
   void InitModelUsingGaussian();
 
   DISALLOW_COPY_AND_ASSIGN(Model);

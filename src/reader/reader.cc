@@ -28,7 +28,6 @@ This file is the implementation of reader.h
 #include <string.h>
 
 #include "src/base/common.h"
-#include "src/base/logging.h"
 #include "src/base/file_util.h"
 
 using std::vector;
@@ -41,7 +40,7 @@ const uint32 kMaxLineSize = 100 * 1024; // 100 KB one line
 typedef vector<string> StringList;
 
 Reader::Reader(const string& filename,
-               uint32 num_samples,
+               int num_samples,
                ModelType type,
                bool loop,
                bool in_memory) :
@@ -49,12 +48,12 @@ Reader::Reader(const string& filename,
   m_num_samples(num_samples),
   m_loop(loop),
   m_in_memory(in_memory),
-  m_type(type) {
+  m_type(type),
+  m_data_samples(num_samples, type) {
     CHECK_GT(m_num_samples, 0);
-    CHECK_NE(filename.empty(), true);
-    m_data_samples.resize(m_num_samples, m_type);
+    CHECK_NE(m_filename.empty(), true);
     m_file_ptr = OpenFileOrDie(m_filename.c_str(), "r");
-    // If the input data is small, 
+    // If we have ennough memory, 
     // we can read all data into m_data_buf.
     if (m_in_memory) {
       // get the size of current file.
@@ -179,7 +178,8 @@ DMatrix* Reader::SampleFromMemory() {
   return &m_data_samples;
 }
 
-uint32 Reader::ReadLineFromMemory(char* line, char* buf, 
+uint32 Reader::ReadLineFromMemory(char* line, 
+                                  char* buf, 
                                   uint32 start_pos, 
                                   uint32 len) {
   // End of the file

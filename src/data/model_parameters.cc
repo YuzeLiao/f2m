@@ -17,7 +17,7 @@
 /*
 Author: Chao Ma (mctt90@gmail.com)
 
-This file is the implementation of model parameters.
+This file is the implementation of model_parameters.h 
 */
 
 #include "src/data/model_parameters.h"
@@ -26,7 +26,6 @@ This file is the implementation of model parameters.
 #include <fstream>
 
 #include "src/base/common.h"
-#include "src/base/logging.h"
 #include "src/base/file_util.h"
 #include "src/base/random.h"
 
@@ -43,7 +42,7 @@ const uint32 kMaxBufSize = sizeof(real_t) * 1024 * 1024; // 32 MB
 const uint32 kElemSize = sizeof(real_t);
 
 Model::Model(index_t feature_num, ModelType type,
-             uint32 k, index_t field_num, bool gaussian) :
+             int k, int field_num, bool gaussian) :
   m_type(type),
   m_feature_num(feature_num),
   m_k(k),
@@ -67,6 +66,7 @@ Model::Model(index_t feature_num, ModelType type,
       LOG(FATAL) << "Unknow model type: " << type;
     }
     try {
+      // Init all the parameters to 1.0 by default.
       m_parameters.resize(m_parameters_num, 1.0);
       if (gaussian) {
         InitModelUsingGaussian();
@@ -94,24 +94,27 @@ void Model::SaveModel(const string& filename) {
   for (index_t i = 0; i < m_parameters_num; ++i) {
     // buffer is full
     if (total_size + kElemSize > kMaxBufSize) {
-      // from file_util.h
-      // flush the memory buffer
-      if (kMaxBufSize != WriteDataToDisk(pfile, buf, total_size)) {
+      // flush the memory buffer to disk.
+      if (kMaxBufSize != WriteDataToDisk(pfile, 
+                                         buf, 
+                                         total_size)) {
         LOG(FATAL) << "Write model to file " 
-                   << filename << " error.\n";
+                   << filename << " error.";
       }
       total_size = 0; 
       --i;
-    } else { // add value to in-memory buffer
+    } else { // add element to in-memory buffer
       char *ch = reinterpret_cast<char*>(&(m_parameters[i]));
       memcpy(buf + total_size, ch, kElemSize);
       total_size += kElemSize;
     }
   }
   if (total_size != 0) {
-    if (total_size != WriteDataToDisk(pfile, buf, total_size)) {
+    if (total_size != WriteDataToDisk(pfile, 
+                                      buf, 
+                                      total_size)) {
       LOG(FATAL) << "Write model to file "
-                 << filename << " error.\n"; 
+                 << filename << " error."; 
     }
   }
   Close(pfile);

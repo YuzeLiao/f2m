@@ -17,7 +17,7 @@
 /*
 Author: Chao Ma (mctt90@gmail.com)
 
-This files defines Reader class, which returns N data samples (string) 
+This files defines Reader class, which returns N data samples 
 in each iteration.
 */
 
@@ -111,19 +111,19 @@ namespace f2m {
 class Reader {
  public:
   Reader(const string& filename,
-         uint32 num_samples,
-         ModelType type,
-         bool loop = true,
-         bool in_memory = false); /* Reader samples data from disk file 
-                                     by default. */
+         int num_samples,
+         ModelType type = LR,
+         bool loop = true, // Continue to sample data in a loop.
+         bool in_memory = false); // Reader samples data from disk file 
+                                  // by default.
   ~Reader();
 
-  // Return a pointer to N lines of data samples.
+  // Return a pointer to the DMatrix.
   DMatrix* Samples();
 
  private:
   string m_filename;                // indentify the input file.
-  uint32 m_num_samples;             // how many data samples we need.
+  int m_num_samples;                // the number of data samples in each sampling.
   bool m_loop;                      // sample data in a loop.
   bool m_in_memory;                 // load all data into memory.
   FILE* m_file_ptr;                 // maintain current file pointer.
@@ -131,12 +131,10 @@ class Reader {
 
   DMatrix m_data_buf;               // bufferring all parsed data in memory.
   DMatrix m_data_samples;           // data samples
-  Parser m_parser;                  // Parse StringList
+  Parser m_parser;                  // Parse StringList to the DMatrix format.
 
   DMatrix* SampleFromDisk();
   DMatrix* SampleFromMemory();
-  uint32 ReadLineFromMemory(char* line, char* buf, 
-                            uint32 pos, uint32 len);
 
   DISALLOW_COPY_AND_ASSIGN(Reader);
 };

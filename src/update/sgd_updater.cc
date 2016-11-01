@@ -36,10 +36,12 @@ void SGDUpdater::UpdateLR(const SparseGrad& grad) {
   // regular gradient
   if (m_regu_type == L1) {
     for (index_t i = 0; i < param->size(); ++i) {
-      param[i] -= m_learning_rate * m_regu_lamda * param[i];
+      param[i] -= m_learning_rate * m_regu_lamda;
     }
   } else if (m_regu_type == L2) {
-
+    for (index_t i = 0; i < param->size(); ++i) {
+      param[i] -= m_learning_rate * m_regu_lamda * param[i]; 
+    }
   }
 }
 

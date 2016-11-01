@@ -15,7 +15,6 @@
  * -------------------------------------------------------------------------- */
 
 /* 
-Copyright (c) 2016 by contributors.
 Author: Chao Ma (mctt90@gmail.com)
 
 This files defines Parser class, which parse the Reader's 
@@ -31,7 +30,6 @@ output to a DMatrix format.
 #include <string>
 
 #include "src/base/common.h"
-#include "src/base/logging.h"
 #include "src/base/split_string.h"
 #include "src/data/data_structure.h"
 
@@ -42,36 +40,38 @@ namespace f2m {
 
 typedef vector<string> StringList;
 
-// Given a StringList, parse it to a DMatrix format.
+// Given a StringList, parse it to the DMatrix format.
 class Parser {
  public:
   virtual void Parse(const StringList& list, 
                      DMatrix& matrix) {
     CHECK_GE(list.size(), 0);
     CHECK_GE(matrix.row_size, 0);
+    // Note that here we need to use the matrix.row_size 
+    // as the bound because sometimes this size could be smaller
+    // than the size of StringList.
     for (index_t i = 0; i < matrix.row_size; ++i) {
-      // parse the following format:
-      // [0:12.234 3:0.123 6:0.21 7:1234] for LR and FM, or
-      // [0:12.234:0 3:0.123:1 6:0.21:2 7:1234:3] for FFM
+      // Parse the following format:
+      // [ Y idx:value \table idx:value ... ] for LR and FM, or
+      // [ Y field:idx:value \table field:idx:value ... ] for FFM.
       StringList items;
       SplitStringUsing(list[i], "\t", &items);
-      index_t len = items.size();
+      int len = items.size();
+      // parse Y
       matrix.Y[i] = atof(items[0].c_str());
+      // parse row
       CHECK_NOTNULL(matrix.row[i]);
-      matrix.row[i]->resize(len-1, matrix.model_type);
-      for (index_t j = 1; j < len; ++j) {
+      matrix.row[i]->resize(len-1);
+      for (int j = 1; j < len; ++j) {
         StringList tmp_item; 
         SplitStringUsing(items[j], ":", &tmp_item);
         if (matrix.model_type == FFM) {
           CHECK_EQ(tmp_item.size(), 3);
-        } else {
-          CHECK_EQ(tmp_item.size(), 2);
-        }
-        if (matrix.model_type == FFM) {
           matrix.row[i]->field[j-1] = atoi(tmp_item[0].c_str());
           matrix.row[i]->idx[j-1] = atoi(tmp_item[1].c_str());
           matrix.row[i]->X[j-1] = atof(tmp_item[2].c_str());
-        } else {
+        } else { // LR or FM
+          CHECK_EQ(tmp_item.size(), 2);
           matrix.row[i]->idx[j-1] = atoi(tmp_item[0].c_str());
           matrix.row[i]->X[j-1] = atof(tmp_item[1].c_str());
         }

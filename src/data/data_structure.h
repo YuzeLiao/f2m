@@ -31,65 +31,80 @@ using std::vector;
 
 namespace f2m {
 
-// We use the 32 bits float type to store the real number,
-// such as the parameters and gradients. 
+// We use the 32 bits float to store the real number,
+// such as the model parameters and gradients. 
 typedef float real_t;
 
-// We use the 32 bits unsigned int type to store the index,
-// or the size of model parameters. 
+// We use the 32 bits unsigned int to store the index,
+// as well as the size of model parameters. 
 typedef uint32 index_t;
 
-// What model we use in this task.
+// Identify which model we use in this task.
 enum ModelType { LR, FM, FFM };
 
-// What regularzation we use in this task.
+// Identify which regularizer we use in this task.
 enum RegularType { L1, L2, NONE };
 
-// We use the SparseRow to store one line of the input data,
-// which is parsed from the StringList.
-// Notice that the entry of 'field' is optional, and 
-// it used only for the FFM task. 
+// SparseRow is used to store one line of parsed data.
+// Notice that the entry of 'field' is used only for 
+// the FFM task. 
 struct SparseRow {
-  // In different iteration the row size may be 
-  // different, so we need to resize it.
-  void resize(index_t len, ModelType type) {
+  // Constructors
+  SparseRow(ModelType type = LR) 
+    : model_type(type) {}
+  
+  SparseRow(index_t len, ModelType type = LR)
+    : model_type(type) {
+    CHECK_GE(len, 0);
+    resize(len);
+  }
+  // Resize current row.
+  void resize(index_t len) {
     CHECK_GE(len, 0);
     size = len;
     X.resize(len);
     idx.resize(len);
-    if (type == FFM) 
+    if (model_type == FFM) { 
       field.resize(len);
+    }
   }
-  // X can be used to store both the numerical feature
-  // and the categorical features. 
+  // X can be used to store both the numerical 
+  // features and the categorical features. 
   vector<real_t> X;
-  // Storing the feature index.
+  // The idx is used to store the feature index.
   vector<index_t> idx;
   // The 'field' is optional, only used for FFM.
   vector<index_t> field;
-  // Size of the SparseRow. 
+  // Identify how many features are stored in 
+  // current SparseRow. 
   index_t size;
+  // enum  ModelType { LR, FM, FFM }
+  ModelType model_type;
 };
 
-// DMatrix (data matrix) is used to store batch of data, 
-// which can be used for both trainning and prediction. 
-// Note that DMatrix can also be a memory buffer to store
-// all the trainning data, which will be sampled by another 
-// DMatrix in each iteration.
+// DMatrix (data matrix) is used to store a batch 
+// of data for both trainning and prediction process. 
 struct DMatrix {
-  // resize
-  void resize(index_t size, ModelType type) {
+  // Constructors
+  DMatrix(ModelType type = LR) 
+    : model_type(type) {}
+
+  DMatrix(index_t size, ModelType type = LR)
+    : model_type(type) {
     CHECK_GE(size, 0);
+    resize(size);
+  }
+  // Resize current data matrix.
+  void resize(index_t size) {
+    CHECK_GE(size, 0);
+    row_size = size;
     row.resize(size);
     Y.resize(size);
-    row_size = size;
-    model_type = type;
   }
-  // When we sample from disk, we need to use this
-  // function to initialize the SparseRow pointers. 
+  // Initialize the row pointers. 
   void InitSparseRow() {
     for (index_t i = 0; i < row_size; ++i) {
-      row[i] = new SparseRow();
+      row[i] = new SparseRow(model_type);
     }   
   }
   // Storing a set of SparseRow.
@@ -99,38 +114,51 @@ struct DMatrix {
   // Y can be either -1 or 0 (for negetive examples),
   // and be 1 (for positive examples). 
   vector<real_t> Y;
-  // Size of DMatrix
+  // Row size of current DMatrix
   index_t row_size;
-  // model type
+  // enum ModelType { LR, FM, FFM }
   ModelType model_type;
 };
 
 // SparseGrad is used to store the calculated gradient.
-// Here we use the 'flat model' to represent the model of LR,
-// FM, as well as FFM. Flat model stores all the parameters in 
-// a big array.
+// Note that here we do not use map<index_t, real_t> to
+// store the sparse data becasue of the poor 
+// performance of map or hash_map (unordered_map).
 struct SparseGrad {
-  // Constructor
-  SparseGrad(index_t size) {
-    w.resize(size);
-    v.resize(size);
-    pos_w.resize(size);
-    pos_v.resize(size);
-    size_w = 0;
-    size_v = 0;
+  // Constructors
+  SparseGrad(ModelType type = LR)
+    : size_w(0), size_v(0), model_type(type) {}
+
+  SparseGrad(index_t size, ModelType type = LR) 
+    : size_w(0), size_v(0), model_type(type) {
+    CHECK_GE(size, 0);
+    resize(size);
   }
-  // The gradient w.
+  // Resize current gradient vector.
+  resize(index_t size) {
+    w.resize(size);
+    pos_w.resize(size);
+    if (type == FM || type == FFM) {
+      v.resize(size);
+      pos_v.resize(size);
+    }
+  }
+  // Store the bias term and linear terms.
   vector<real_t> w;
-  // The gradient V
+  // Store the factor vectors.
   vector<real_t> v;
   // The position of w.
   vector<index_t> pos_w;
   // The postition of v.
   vector<index_t> pos_v;
-  // note that size_w may not equal to w.size().
+  // How many gradients stored in w.
+  // Note that the size_w != w.size().
   index_t size_w;
-  // note that size_v may not equal to v.size().
+  // How many gradients. stored in v.
+  // Note that the size_v != v.size().
   index_t size_v;
+  // enum ModelType { LR, FM, FFM }
+  ModelType model_type;
 };
 
 } // namespace f2m

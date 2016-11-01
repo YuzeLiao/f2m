@@ -15,7 +15,6 @@
  * -------------------------------------------------------------------------- */
 
 /* 
-Copyright (c) 2016 by contributors.
 Author: Chao Ma (mctt90@gmail.com)
 
 This file defines the base class Loss, which is the 
