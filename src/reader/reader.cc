@@ -39,6 +39,9 @@ const uint32 kMaxLineSize = 100 * 1024; // 100 KB one line
 
 typedef vector<string> StringList;
 
+uint32 ReadLineFromMemory(char* line, char* buf, 
+                          uint32 start_pos, uint32 len);
+
 Reader::Reader(const string& filename,
                int num_samples,
                ModelType type,
@@ -178,10 +181,8 @@ DMatrix* Reader::SampleFromMemory() {
   return &m_data_samples;
 }
 
-uint32 Reader::ReadLineFromMemory(char* line, 
-                                  char* buf, 
-                                  uint32 start_pos, 
-                                  uint32 len) {
+uint32 ReadLineFromMemory(char* line, char* buf, 
+                          uint32 start_pos, uint32 len) {
   // End of the file
   if (start_pos >= len) return 0;
   uint32 end_pos = start_pos;

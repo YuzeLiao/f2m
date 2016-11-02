@@ -135,10 +135,10 @@ struct SparseGrad {
     resize(size);
   }
   // Resize current gradient vector.
-  resize(index_t size) {
+  void resize(index_t size) {
     w.resize(size);
     pos_w.resize(size);
-    if (type == FM || type == FFM) {
+    if (model_type == FM || model_type == FFM) {
       v.resize(size);
       pos_v.resize(size);
     }

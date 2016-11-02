@@ -62,13 +62,13 @@ TEST(MODEL_TEST, SaveModel) {
 TEST(MODEL_TEST, LoadModel) {
   // Init a FFM model with gaussion distribution.
   Model ffm(kFeature_num, FFM, kFactor, kField, true);
-  // parameters become 0.
+  // parameters become 1.0
   ffm.LoadModel(kFilename);
   index_t num_parameter = kFeature_num + 1 + 
                           kFeature_num * kField * kFactor;
   vector<real_t>* para = ffm.GetParameter();
   for (index_t i = 0; i < num_parameter; ++i) {
-    EXPECT_EQ((*para)[i], 0.0);
+    EXPECT_EQ((*para)[i], 1.0);
   }
 }
 
