@@ -52,6 +52,7 @@ Reader::Reader(const string& filename,
   m_loop(loop),
   m_in_memory(in_memory),
   m_type(type),
+  m_data_buf(0, type),
   m_data_samples(num_samples, type) {
     CHECK_GT(m_num_samples, 0);
     CHECK_NE(m_filename.empty(), true);
@@ -81,7 +82,7 @@ Reader::Reader(const string& filename,
           num_line++;
         }
       }
-      m_data_buf.resize(num_line, m_type);
+      m_data_buf.resize(num_line);
       m_data_buf.InitSparseRow();
       // parse line to StringList.
       StringList list(num_line);
@@ -150,7 +151,7 @@ DMatrix* Reader::SampleFromDisk() {
   }
   // End of file
   if (num_line != m_num_samples) {
-    m_data_samples.resize(num_line, m_type);
+    m_data_samples.resize(num_line);
   }
   m_parser.Parse(list, m_data_samples);
   return &m_data_samples;
@@ -176,7 +177,7 @@ DMatrix* Reader::SampleFromMemory() {
   }
   // End of file
   if (num_line != m_num_samples) {
-    m_data_samples.resize(num_line, m_type);
+    m_data_samples.resize(num_line);
   }
   return &m_data_samples;
 }

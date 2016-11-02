@@ -43,8 +43,7 @@ TEST(PARSER_TEST, Parse_LR_FM) {
   for (index_t i = 0; i < kNum_lines; ++i) {
     list[i] = kStr;
   }
-  DMatrix matrix;
-  matrix.resize(kNum_lines, LR);
+  DMatrix matrix(kNum_lines);
   matrix.InitSparseRow();
   Parser parser;
   parser.Parse(list, matrix);
@@ -67,8 +66,7 @@ TEST(PARSER_TEST, Parse_FFM) {
   for (index_t i = 0; i < kNum_lines; ++i) {
     list[i] = kStrFFM;
   }
-  DMatrix matrix;
-  matrix.resize(kNum_lines, FFM);
+  DMatrix matrix(kNum_lines, FFM);
   matrix.InitSparseRow();
   Parser parser;
   parser.Parse(list, matrix);
