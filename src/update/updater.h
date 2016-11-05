@@ -44,30 +44,17 @@ class Updater {
     : m_model(model), 
       m_learning_rate(learning_rate),
       m_regu_lamda(regu_lamda),
-      m_model_type(model_type),
       m_regu_type(regu_type) {}
 
   virtual ~Updater() {}
     
-  void Update(const SparseGrad& grad) {
-    if (m_type == LR) UpdateLR(grad);
-    else if (m_type == FM) UpdateFM(grad);
-    else if (m_type == FFM) UpdateFFM(grad);
-    else {
-      LOG(FATAL) << "Unknow model type: " << m_type;
-    }
-  } 
+  virtual void Update(const SparseGrad& grad) = 0;
   
  private:
   Model* m_model;               // point to current model parameters.
   real_t m_learning_rate;       // control the step size.
   real_t m_regu_lamda;          // control the regularzation.
-  ModelType m_model_type;       // enum ModelType { LR, FM, FFM }
   RegularType m_regu_type;      // enum RegularType { L1, L2, NONE }
-
-  virtual void UpdateLR(const SparseGrad& grad) = 0;
-  virtual void UpdateFM(const SparseGrad& grad) = 0;
-  virtual void UpdateFFM(const SparseGrad& grad) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Updater);
 };
