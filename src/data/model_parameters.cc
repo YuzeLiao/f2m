@@ -21,6 +21,7 @@ This file is the implementation of model_parameters.h
 */
 
 #include "src/data/model_parameters.h"
+
 #include <vector>
 #include <string>
 #include <fstream>

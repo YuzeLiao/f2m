@@ -42,12 +42,11 @@ TEST(LogitLoss, Evaluate) {
 
 TEST(LogitLoss, Predict) {
   // DMatrix
-  DMatrix matrix;
-  matrix.resize(100, LR);
+  DMatrix matrix(100);
   matrix.InitSparseRow();
   for (int i = 0; i < matrix.row_size; ++i) {
     SparseRow* row = matrix.row[i];
-    row->resize(100, LR);
+    row->resize(100);
     for (int j = 0; j < 100; ++j) {
       row->X[j] = 2.0;
       row->idx[j] = j;
@@ -66,12 +65,11 @@ TEST(LogitLoss, Predict) {
 
 TEST(LogitLoss, CalcGrad) {
   // DMatrix
-  DMatrix matrix;
-  matrix.resize(100, LR);
+  DMatrix matrix(100);
   matrix.InitSparseRow();
   for (int i = 0; i < matrix.row_size; ++i) {
     SparseRow* row = matrix.row[i];
-    row->resize(100, LR);
+    row->resize(100);
     matrix.Y[i] = 1.0;
     for (int j = 0; j < 100; ++j) {
       row->X[j] = 999;
