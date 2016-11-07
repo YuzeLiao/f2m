@@ -52,6 +52,8 @@ class Model {
   void LoadModel(const string& filename);
   // Get model parameters.
   vector<real_t>* GetParameter() { return &m_parameters; }
+  // Get model type.
+  ModelType GetModelType() const { return m_type; } 
 
  private:
   ModelType m_type;                 // enum ModelType { LR, FM, FFM };
