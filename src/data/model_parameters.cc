@@ -42,9 +42,10 @@ const real_t kInitStdev = 0.01;
 const uint32 kMaxBufSize = sizeof(real_t) * 1024 * 1024; // 32 MB
 const uint32 kElemSize = sizeof(real_t);
 
-Model::Model(index_t feature_num, ModelType type,
+Model::Model(index_t feature_num, F2M_PARAM hyperparam, ModelType type,
              int k, int field_num, bool gaussian) :
   m_type(type),
+  m_hyperparam(hyperparam),
   m_feature_num(feature_num),
   m_k(k),
   m_field_num(field_num) {

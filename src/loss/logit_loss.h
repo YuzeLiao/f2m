@@ -39,7 +39,7 @@ namespace f2m {
 //  [ loss(x, y, w) = log(1 + exp(-y * <w, x>)) ]
 class LogitLoss : public Loss {
  public:
-  LogitLoss() {}
+   LogitLoss(RegularType regu_type) : Loss(regu_type) {}
   ~LogitLoss() {}
 
   // Given the input DMatrix and current model, return

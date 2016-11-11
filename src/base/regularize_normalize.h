@@ -16,39 +16,22 @@
 
 /*
  
- This file implements SGD_updater.h.
+ This file implements regularization(L1、L2) and 
+ normalization.
  */
 
-#include "src/update/SGD_updater.h"
+#ifndef F2M_SRC_BASE_REGULARIZATION_NORMALIZATION_H
+#define F2M_SRC_BASE_REGULARIZATION_NORMALIZATION_H
 
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
 
 namespace f2m {
-void SGD_updater::Update(const SparseGrad& grad) {
-   vector<real_t>* param = m_model->GetParameter();
-   CHECK_NOTNULL(param);
-   ModelType type = m_model->GetModelType();
-   if (type == LR || type == FM || type ==  FFM) {
-      // no matter which type of the three our model is, 
-      // bias and linear term should always be updated
-      index_t end_linear = grad.size_w;
-      for (index_t i = 0; i < end_linear; i++) {
-         index_t pos = grad.pos_w[i];
-         (*param)[pos] -= grad.w[i];
-      }
-      // update latent vector for FM and FFM
-      if (type != LR) {
-         index_t end_V = grad.size_v;
-         for (index_t i = 0; i < end_V; i++) {
-            index_t pos = grad.pos_v[i];
-            (*param)[pos] -= grad.v[i];
-         }
-      }
-   }
-   else {
-      LOG(FATAL) << "Unknown model type: " << type;
-   }
+// calculate the gradient of regulization term
+#define REGU_GRAD_TERM(regu_type, w) \
+(regu_type == NONE) ? 0 :            \
+((regu_type == L1) ? ((w > 0) ? 1 : ((w < 0) ? -1 : 0)) : w)
+
 }
-   
-} // namespace f2m
+
+#endif /* F2M_SRC_BASE_REGULARIZATION_NORMALIZATION_H */

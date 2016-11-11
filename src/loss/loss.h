@@ -41,7 +41,7 @@ namespace f2m {
 // FM loss (fm_loss.h), and FFM loss (ffm_loss.h)
 class Loss {
  public:
-  Loss() {}
+  Loss(RegularType regu_type) : m_regu_type(regu_type) {}
   virtual ~Loss() {}
 
   // Given the input DMatrix and current model, return 
@@ -71,7 +71,8 @@ class Loss {
     return objv;
   }
 
- private:
+ protected:
+  RegularType m_regu_type;
   DISALLOW_COPY_AND_ASSIGN(Loss);
 };
 

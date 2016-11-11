@@ -29,9 +29,9 @@ namespace f2m {
 
 struct F2M_PARAM {
   real_t learning_rate;
-  real_t regu_lamda;
+  real_t regu_lambda;
   RegularType regu_type;
-  string model_checkpoint_file;
+  std::string model_checkpoint_file;
 };
 
 } // namespace f2m

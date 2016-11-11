@@ -30,7 +30,8 @@ This file defines the basic data structures used by f2m.
 using std::vector;
 
 namespace f2m {
-
+// Bias term will always be stored in pos 0
+#define BIAS 0
 // We use the 32 bits float to store the real number,
 // such as the model parameters and gradients. 
 typedef float real_t;
@@ -143,7 +144,9 @@ struct SparseGrad {
       pos_v.resize(size);
     }
   }
-  // Store the bias term and linear terms.
+  // Store the bias term
+  real_t bias;
+  // Store the linear terms.
   vector<real_t> w;
   // Store the factor vectors.
   vector<real_t> v;

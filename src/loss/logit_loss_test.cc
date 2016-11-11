@@ -31,7 +31,7 @@ This file tests logit_loss.h
 
 namespace f2m {
 
-TEST(LogitLoss, Evaluate) {
+/*TEST(LogitLoss, Evaluate) {
   // all of the answer all right
   vector<real_t> pred(100, 200);
   vector<real_t> label(100, 1.0);
@@ -61,9 +61,9 @@ TEST(LogitLoss, Predict) {
   for (int i = 0; i < 100; ++i) {
     EXPECT_EQ(pred[i], 200.0);
   }
-}
+}*/
 
-TEST(LogitLoss, CalcGrad) {
+/*TEST(LogitLoss, CalcGrad) {
   // DMatrix
   DMatrix matrix(100);
   matrix.InitSparseRow();
@@ -86,6 +86,6 @@ TEST(LogitLoss, CalcGrad) {
   for (int i = 0; i < 10000; ++i) {
     EXPECT_EQ(grad.w[i], -0);
   }
-}
+}*/
 
 } // namespace f2m

@@ -57,16 +57,16 @@ void AdaGrad_updater::Update(const SparseGrad& grad) {
    CHECK_NOTNULL(param);
    ModelType type = m_model->GetModelType();
    if (type == LR || type == FM || type == FFM) {
-      int end_linear = grad.size_w;
-      for (int i = 0; i < end_linear; i++) {
-         int pos = grad.pos_w[i];
+      index_t end_linear = grad.size_w;
+      for (index_t i = 0; i < end_linear; i++) {
+         index_t pos = grad.pos_w[i];
          m_g_parameters[pos] += grad.w[i] * grad.w[i];
          (*param)[pos] -= m_ada_eta * grad.w[pos] / sqrt(m_g_parameters[pos]);
       }
       if (type != LR) {
-         int end_V = grad.size_v;
-         for (int i = 0; i < end_V; i++) {
-            int pos = grad.pos_v[i];
+         index_t end_V = grad.size_v;
+         for (index_t i = 0; i < end_V; i++) {
+            index_t pos = grad.pos_v[i];
             m_g_parameters[pos] += grad.w[i] * grad.w[i];
             (*param)[pos] -= m_ada_eta * grad.w[pos] / sqrt(m_g_parameters[pos]);
          }

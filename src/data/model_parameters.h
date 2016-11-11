@@ -28,6 +28,7 @@ This file defines the model parameters used by f2m.
 
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
+#include "hyper_parameters.h"
 
 using std::vector;
 using std::string;
@@ -40,9 +41,10 @@ namespace f2m {
 class Model {
  public:
   // Constructors.
-  Model(index_t feature_num, 
+  Model(index_t feature_num,
+        F2M_PARAM hyperparam,
         ModelType type = LR, // for logistic regression by default.
-        int k = 0, 
+        int k = 0,
         int field_num = 0,
         bool gaussian = false); // Initialize parameters in 
                                 // a gaussian distribution.
@@ -62,6 +64,8 @@ class Model {
   index_t GetSizeOfVector() const { return m_k; }
   // Get number of fields (for FFM).
   index_t GetNumberOfFields() const { return m_field_num; }
+  // Get regulization term lambda
+  real_t GetLambda () const {  return m_hyperparam.regu_lambda;}
 
  private:
   ModelType m_type;                 // enum ModelType { LR, FM, FFM };
@@ -70,6 +74,7 @@ class Model {
   index_t m_parameters_num;         // number of parameter
   int m_k;                          // vector size for FM and FFM
   int m_field_num;                  // number of field (only for FFM)
+  F2M_PARAM m_hyperparam;
 
   // Initialize model parameters using 
   // arandom gaussian distribution.

@@ -36,7 +36,7 @@ const uint32 kFactor = 10;
 const uint32 kField = 10;
 const string kFilename = "/tmp/test_model.binary";
 
-TEST(MODEL_TEST, Init) {
+/*TEST(MODEL_TEST, Init) {
   // Init LR using gaussion.
   Model model_lr(kFeature_num, LR, 0, 0, true);
   vector<real_t>* para = model_lr.GetParameter();
@@ -71,5 +71,5 @@ TEST(MODEL_TEST, LoadModel) {
     EXPECT_EQ((*para)[i], 1.0);
   }
 }
-
+*/
 } // namespace f2m

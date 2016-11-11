@@ -24,6 +24,7 @@
 		C2D639941DD5C18300D57DE1 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2D639911DD5C18300D57DE1 /* libgtest.a */; };
 		C2D639951DD5C18300D57DE1 /* libgtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2D639921DD5C18300D57DE1 /* libgtest_main.a */; };
 		C2D639961DD5C18300D57DE1 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2D639931DD5C18300D57DE1 /* gtest.framework */; };
+		C2D639991DD5D34900D57DE1 /* fm_loss.cc in Sources */ = {isa = PBXBuildFile; fileRef = C2D639981DD5D34900D57DE1 /* fm_loss.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,6 +85,8 @@
 		C2D639921DD5C18300D57DE1 /* libgtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest_main.a; path = "../../Library/Developer/Xcode/DerivedData/gtest-dxowampzswkzabghxrizbillnvzo/Build/Products/Debug/libgtest_main.a"; sourceTree = "<group>"; };
 		C2D639931DD5C18300D57DE1 /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = gtest.framework; path = "../../Library/Developer/Xcode/DerivedData/gtest-dxowampzswkzabghxrizbillnvzo/Build/Products/Debug/gtest.framework"; sourceTree = "<group>"; };
 		C2D639971DD5C20700D57DE1 /* F2M */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = F2M; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2D639981DD5D34900D57DE1 /* fm_loss.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fm_loss.cc; sourceTree = "<group>"; };
+		C2D6399A1DD5D3C900D57DE1 /* regularize_normalize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regularize_normalize.h; path = ../base/regularize_normalize.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +162,7 @@
 		C2D639621DD5C0BE00D57DE1 /* loss */ = {
 			isa = PBXGroup;
 			children = (
+				C2D6399A1DD5D3C900D57DE1 /* regularize_normalize.h */,
 				C2D639631DD5C0BE00D57DE1 /* CMakeLists.txt */,
 				C2D639641DD5C0BE00D57DE1 /* ffm_loss.h */,
 				C2D639651DD5C0BE00D57DE1 /* ffm_loss_test.cc */,
@@ -167,6 +171,7 @@
 				C2D639681DD5C0BE00D57DE1 /* logit_loss.h */,
 				C2D639691DD5C0BE00D57DE1 /* logit_loss_test.cc */,
 				C2D6396A1DD5C0BE00D57DE1 /* loss.h */,
+				C2D639981DD5D34900D57DE1 /* fm_loss.cc */,
 			);
 			path = loss;
 			sourceTree = "<group>";
@@ -276,6 +281,7 @@
 				C2D6398A1DD5C0BE00D57DE1 /* reader.cc in Sources */,
 				C2D6398E1DD5C0BE00D57DE1 /* updater.cc in Sources */,
 				C2D6398C1DD5C0BE00D57DE1 /* AdaGrad_updater.cc in Sources */,
+				C2D639991DD5D34900D57DE1 /* fm_loss.cc in Sources */,
 				C2D639821DD5C0BE00D57DE1 /* logging.cc in Sources */,
 				C2D639841DD5C0BE00D57DE1 /* model_parameters.cc in Sources */,
 				C2D639881DD5C0BE00D57DE1 /* logit_loss_test.cc in Sources */,
