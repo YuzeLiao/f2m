@@ -50,7 +50,7 @@ class Updater {
   // Using simple SGD by default.
   virtual void Update(const SparseGrad& grad);
   
- private:
+ protected:
   Model* m_model;               // point to current model parameters.
   real_t m_learning_rate;       // control the step size.
   real_t m_regu_lamda;          // control the regularzation.
