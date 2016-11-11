@@ -25,38 +25,28 @@
 #include "src/data/data_structure.h"
 
 namespace f2m {
-void SGD_updater::Update(const SparseGrad& grad)
-{
+void SGD_updater::Update(const SparseGrad& grad) {
    vector<real_t>* param = m_model->GetParameter();
    CHECK_NOTNULL(param);
    ModelType type = m_model->GetModelType();
-   if (type == LR)
-   {
-      int end = grad.size_w;
-      for (int i = 0; i < end; i++)
-      {
+   if (type == LR || type == FM || type ==  FFM) {
+      // no matter which type of the three our model is, 
+      // bias and linear term should always be updated
+      int end_linear = grad.size_w;
+      for (int i = 0; i < end_linear; i++) {
          int pos = grad.pos_w[i];
-         (*param)[pos] += grad.w[i];
+         (*param)[pos] -= grad.w[i];
+      }
+      // update latent vector for FM and FFM
+      if (type != LR) {
+         int end_V = grad.size_v;
+         for (int i = 0; i < end_V; i++) {
+            int pos = grad.pos_v[i];
+            (*param)[pos] -= grad.v[i];
+         }
       }
    }
-   else
-      if (type == FM || type ==  FFM)
-      {
-         int end_linear = grad.size_w;
-         for (int i = 0; i < end_linear; i++)
-         {
-            int pos = grad.pos_w[i];
-            (*param)[pos] += grad.w[i];
-         }
-         int end_V = grad.size_v;
-         for (int i = 0; i < end_V; i++)
-         {
-            int pos = grad.pos_v[i];
-            (*param)[pos] += grad.v[i];
-         }
-      }
-   else
-   {
+   else {
       LOG(FATAL) << "Unknown model type: " << type;
    }
 }
