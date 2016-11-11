@@ -53,7 +53,15 @@ class Model {
   // Get model parameters.
   vector<real_t>* GetParameter() { return &m_parameters; }
   // Get model type.
-  ModelType GetModelType() const { return m_type; } 
+  ModelType GetModelType() const { return m_type; }
+  // Get number of features.
+  index_t GetNumberOfFeatures() const { return m_feature_num; }
+  // Get number of parameters.
+  index_t GetNumberOfParameters() const { return m_parameters_num; }
+  // Get number of vector size (for FM and FFM).
+  index_t GetSizeOfVector() const { return m_k; }
+  // Get number of fields (for FFM).
+  index_t GetNumberOfFields() const { return m_field_num; }
 
  private:
   ModelType m_type;                 // enum ModelType { LR, FM, FFM };
