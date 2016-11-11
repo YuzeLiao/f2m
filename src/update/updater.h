@@ -39,7 +39,6 @@ class Updater {
   Updater(Model* model, 
           real_t learning_rate, 
           real_t regu_lamda,
-          ModelType model_type = LR,
           RegularType regu_type = L2)
     : m_model(model), 
       m_learning_rate(learning_rate),
