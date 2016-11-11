@@ -30,7 +30,7 @@ namespace f2m {
 // Using simple SGD by defualt.
 void Updater::Update(const SparseGrad& grad) {
   vector<real_t>* param = m_model->GetParameter();
-  if (m_model->m_type == LR) {
+  if (m_model->GetModelType() == LR) {
       
   }
 }    
