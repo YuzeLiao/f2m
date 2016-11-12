@@ -25,6 +25,7 @@
 		C2D639951DD5C18300D57DE1 /* libgtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2D639921DD5C18300D57DE1 /* libgtest_main.a */; };
 		C2D639961DD5C18300D57DE1 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2D639931DD5C18300D57DE1 /* gtest.framework */; };
 		C2D639991DD5D34900D57DE1 /* fm_loss.cc in Sources */ = {isa = PBXBuildFile; fileRef = C2D639981DD5D34900D57DE1 /* fm_loss.cc */; };
+		C2D6399C1DD734AB00D57DE1 /* ffm_loss.cc in Sources */ = {isa = PBXBuildFile; fileRef = C2D6399B1DD734AB00D57DE1 /* ffm_loss.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +88,7 @@
 		C2D639971DD5C20700D57DE1 /* F2M */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = F2M; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2D639981DD5D34900D57DE1 /* fm_loss.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fm_loss.cc; sourceTree = "<group>"; };
 		C2D6399A1DD5D3C900D57DE1 /* regularize_normalize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regularize_normalize.h; path = ../base/regularize_normalize.h; sourceTree = "<group>"; };
+		C2D6399B1DD734AB00D57DE1 /* ffm_loss.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ffm_loss.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +174,7 @@
 				C2D639691DD5C0BE00D57DE1 /* logit_loss_test.cc */,
 				C2D6396A1DD5C0BE00D57DE1 /* loss.h */,
 				C2D639981DD5D34900D57DE1 /* fm_loss.cc */,
+				C2D6399B1DD734AB00D57DE1 /* ffm_loss.cc */,
 			);
 			path = loss;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				C2D6398E1DD5C0BE00D57DE1 /* updater.cc in Sources */,
 				C2D6398C1DD5C0BE00D57DE1 /* AdaGrad_updater.cc in Sources */,
 				C2D639991DD5D34900D57DE1 /* fm_loss.cc in Sources */,
+				C2D6399C1DD734AB00D57DE1 /* ffm_loss.cc in Sources */,
 				C2D639821DD5C0BE00D57DE1 /* logging.cc in Sources */,
 				C2D639841DD5C0BE00D57DE1 /* model_parameters.cc in Sources */,
 				C2D639881DD5C0BE00D57DE1 /* logit_loss_test.cc in Sources */,

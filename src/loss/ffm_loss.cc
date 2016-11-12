@@ -16,7 +16,7 @@
 
 /*
  
- This file implements FMLoss
+ This file implements FFMLoss
  */
 
 #include <vector>
@@ -25,17 +25,17 @@
 #include "src/base/common.h"
 #include "src/data/data_structure.h"
 #include "src/data/model_parameters.h"
-#include "src/loss/fm_loss.h"
+#include "src/loss/ffm_loss.h"
 #include "regularize_normalize.h"
 
 namespace f2m {
-
+   
 // Given the input DMatrix and current model, return
 // the prediction results. Math:
 //  [ pred = <x, w> ]
-void FMLoss::Predict(const DMatrix* matrix,
-             Model& model,
-             vector<real_t>& pred) {
+void FFMLoss::Predict(const DMatrix* matrix,
+                     Model& model,
+                     vector<real_t>& pred) {
    CHECK_NOTNULL(matrix);
    CHECK_GT(pred.size(), 0);
    CHECK_EQ(pred.size(), matrix->row_size);
@@ -51,11 +51,11 @@ void FMLoss::Predict(const DMatrix* matrix,
 // the calculated gradient. Math:
 // Bias: -y / ((1/exp(-y*<w,x>)) + 1)
 // Linear: [ (-y / ( (1/exp(-y*<w,x>))  + 1 )) * X + regularTerm
-// Cross-term: j:［(-y / ( (1/exp(-y*<w,x>))  + 1 ))］ * x_j * x_k * w_k
-//             k:［(-y / ( (1/exp(-y*<w,x>))  + 1 ))］ * x_j * x_k * w_j
-void FMLoss::CalcGrad(const DMatrix* matrix,
-               Model& model,
-               SparseGrad& grad) {
+// Cross-term: j:［(-y / ( (1/exp(-y*<w,x>))  + 1 ))］ * x_j * x_k * W_k_fj
+//             k:［(-y / ( (1/exp(-y*<w,x>))  + 1 ))］ * x_j * x_k * w_j_fk
+void FFMLoss::CalcGrad(const DMatrix* matrix,
+                     Model& model,
+                     SparseGrad& grad) {
    CHECK_NOTNULL(matrix);
    CHECK_GT(matrix->row_size, 0);
    CHECK_GT(model.GetSizeOfVector(),0)
@@ -63,12 +63,13 @@ void FMLoss::CalcGrad(const DMatrix* matrix,
    index_t num = 0;
    index_t model_k = model.GetSizeOfVector();
    index_t feature_num = model.GetNumberOfFeatures();
+   index_t field_num = model.GetFieldNum();
    real_t lambda = model.GetLambda();
    
    for (index_t i = 0; i < matrix->row_size; i++) {
       SparseRow* row = matrix->row[i];
       real_t y = matrix->Y[i];
-      real_t partial_grad = -y / ((1.0 / exp(-y * wTx(row, weight, model))) + 1);
+      real_t partial_grad = -y / ((1.0 /exp(-y * wTx(row, weight, model))) + 1);
       // calculate gradient of bias term
       grad.bias = partial_grad;
       // calculate gradient of linear term
@@ -87,13 +88,15 @@ void FMLoss::CalcGrad(const DMatrix* matrix,
       num = 0;
       for (index_t j = 0; j < row->size; j++) {
          for (index_t k = j + 1; k < row->size;k++) {
-            index_t pos_j = row->idx[j] * model_k + feature_num + 1;
-            index_t pos_k = row->idx[k] * model_k + feature_num + 1;
+            index_t field_j = row->field[j];
+            index_t field_k = row->field[k];
+            index_t pos_j = row->idx[j] * model_k * field_num + model_k * field_k +feature_num + 1;
+            index_t pos_k = row->idx[k] * model_k * field_num + model_k * field_j +feature_num + 1;
             for (index_t l = 0; l < model_k; l++) {
                real_t w_j = partial_grad * row->X[j] * row->X[k] * (*weight)[pos_k + l] +
-                            lambda * (REGU_GRAD_TERM(m_regu_type, (*weight)[pos_j + l]));
+               lambda * (REGU_GRAD_TERM(m_regu_type, (*weight)[pos_j + l]));
                real_t w_k = partial_grad * row->X[j] * row->X[k] * (*weight)[pos_j + l] +
-                            lambda * (REGU_GRAD_TERM(m_regu_type, (*weight)[pos_k + l]));
+               lambda * (REGU_GRAD_TERM(m_regu_type, (*weight)[pos_k + l]));
                if (num >= grad.v.size()) {
                   // resize
                   grad.w.resize(grad.v.size() * 2);
@@ -109,9 +112,10 @@ void FMLoss::CalcGrad(const DMatrix* matrix,
       
    }
 }
-   
-inline real_t FMLoss::wTx(const SparseRow* row, const vector<real_t>* w, const Model& model) {
+ 
+inline real_t FFMLoss::wTx(const SparseRow* row, const vector<real_t>* w, const Model& model) {
    index_t model_k = model.GetSizeOfVector();
+   index_t field_num = model.GetNumberOfFields();
    index_t feature_num = model.GetNumberOfFeatures();
    // initialize val to bias
    real_t val = (*w)[BIAS];
@@ -120,10 +124,13 @@ inline real_t FMLoss::wTx(const SparseRow* row, const vector<real_t>* w, const M
       index_t pos = row->idx[j];
       val += (*w)[pos] * row->X[j];
    }
+   // cross term
    for (index_t j = 0; j < row->size; j++) {
       for (index_t k = j + 1; k < row->size; k++) {
-         index_t pos_j = row->idx[j] * model_k + feature_num + 1;
-         index_t pos_k = row->idx[k] * model_k + feature_num + 1;
+         index_t field_j = row->field[j];
+         index_t field_k = row->field[k];
+         index_t pos_j = row->idx[j] * model_k * field_num + model_k * field_k + feature_num + 1;
+         index_t pos_k = row->idx[k] * model_k * field_num + model_k * field_j + feature_num + 1;
          for (index_t l = 0; l < model_k; l++) {
             val += (*w)[pos_j] * (*w)[pos_k] * row->X[j] * row->X[k];
          }
@@ -131,6 +138,6 @@ inline real_t FMLoss::wTx(const SparseRow* row, const vector<real_t>* w, const M
    }
    return val;
 }
-
-
+   
+   
 }

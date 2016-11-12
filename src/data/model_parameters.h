@@ -66,6 +66,8 @@ class Model {
   index_t GetNumberOfFields() const { return m_field_num; }
   // Get regulization term lambda
   real_t GetLambda () const {  return m_hyperparam.regu_lambda;}
+  // Get field num (for FFM)
+  index_t GetFieldNum() { return m_field_num; }
 
  private:
   ModelType m_type;                 // enum ModelType { LR, FM, FFM };
